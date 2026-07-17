@@ -413,16 +413,16 @@
 
     .project-body blockquote strong { color: var(--accent); }
 
-    /* ── Unordered list ── */
+    /* ── Unordered list (top-level) ── */
     .project-body ul {
       margin: 0 0 16px 0;
-      padding-left: 20px;
+      padding-left: 0;
       list-style: none;
     }
 
     .project-body ul li {
       position: relative;
-      padding-left: 14px;
+      padding-left: 16px;
       margin-bottom: 8px;
       color: var(--text-muted);
     }
@@ -434,6 +434,114 @@
       color: var(--text-dim);
     }
 
+    /* nested list */
+    .project-body ul ul {
+      margin: 6px 0 6px 0;
+    }
+
+    .project-body ul ul li::before {
+      content: '·';
+      color: var(--text-dim);
+    }
+
+    /* ── Carousel ── */
+    .project-carousel {
+      margin-top: 40px;
+      position: relative;
+    }
+
+    .carousel-track-wrap {
+      position: relative;
+      width: 100%;
+      /* fixed aspect ratio — prevents reflow when switching images */
+      aspect-ratio: 16 / 9;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .carousel-slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+
+    .carousel-slide.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .carousel-slide img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+    /* prev / next arrows */
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.45);
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      transition: background 0.15s;
+    }
+
+    .carousel-btn:hover { background: rgba(0,0,0,0.7); }
+    .carousel-btn svg { width: 16px; height: 16px; }
+    .carousel-btn.prev { left: 10px; }
+    .carousel-btn.next { right: 10px; }
+
+    /* dot indicators */
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .carousel-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border-subtle);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.15s, transform 0.15s;
+    }
+
+    .carousel-dot.active {
+      background: var(--accent);
+      transform: scale(1.3);
+    }
+
+    /* counter label */
+    .carousel-counter {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+    }
+
+    /* legacy static images fallback */
     .project-images {
       margin-top: 40px;
       display: flex;
@@ -821,14 +929,36 @@ function renderMarkdown(md) {
     // Blank line — skip
     if (line.trim() === '') { i++; continue; }
 
-    // Unordered list — collect consecutive - lines
-    if (/^- /.test(line)) {
-      const items = [];
-      while (i < lines.length && /^- /.test(lines[i])) {
-        items.push(`<li>${inline(escape(lines[i].slice(2)))}</li>`);
-        i++;
-      }
-      output.push(`<ul>${items.join('')}</ul>`);
+    // Unordered list — handles * and - , with one level of indented nesting (4-space or tab)
+    if (/^[*-] /.test(line)) {
+      const buildList = (indent) => {
+        const items = [];
+        while (i < lines.length) {
+          const l = lines[i];
+          const topLevel = /^[*-] /.test(l) && !l.startsWith('    ') && !l.startsWith('\t');
+          const nested   = /^(    |\t)[*-] /.test(l);
+          if (indent === 0 && topLevel) {
+            // peek ahead for nested children
+            const text = l.replace(/^[*-] /, '');
+            i++;
+            // collect nested items that immediately follow
+            if (i < lines.length && /^(    |\t)[*-] /.test(lines[i])) {
+              const sub = buildList(1);
+              items.push(`<li>${inline(escape(text))}${sub}</li>`);
+            } else {
+              items.push(`<li>${inline(escape(text))}</li>`);
+            }
+          } else if (indent === 1 && nested) {
+            const text = l.replace(/^(    |\t)[*-] /, '');
+            items.push(`<li>${inline(escape(text))}</li>`);
+            i++;
+          } else {
+            break;
+          }
+        }
+        return `<ul>${items.join('')}</ul>`;
+      };
+      output.push(buildList(0));
       continue;
     }
 
@@ -839,7 +969,7 @@ function renderMarkdown(md) {
       lines[i].trim() !== '' &&
       !/^#{2,3} /.test(lines[i]) &&
       !/^> /.test(lines[i]) &&
-      !/^- /.test(lines[i])
+      !/^[*-] /.test(lines[i])
     ) {
       paraLines.push(inline(escape(lines[i])));
       i++;
@@ -848,6 +978,63 @@ function renderMarkdown(md) {
   }
 
   return output.join('\n');
+}
+
+
+// ─── Carousel ────────────────────────────────────────────────────────────────
+function renderCarousel(container, images) {
+  let current = 0;
+
+  const slides = images.map((src, idx) => `
+    <div class="carousel-slide ${idx === 0 ? 'active' : ''}">
+      <img src="${src}" alt="Project image ${idx + 1}" loading="lazy" />
+    </div>`).join('');
+
+  const dots = images.map((_, idx) => `
+    <button class="carousel-dot ${idx === 0 ? 'active' : ''}" data-idx="${idx}" aria-label="Go to image ${idx + 1}"></button>
+  `).join('');
+
+  container.innerHTML = `
+    <div class="project-carousel">
+      <div class="carousel-track-wrap">
+        ${slides}
+        <button class="carousel-btn prev" aria-label="Previous image">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <button class="carousel-btn next" aria-label="Next image">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+      <div class="carousel-dots">${dots}</div>
+      <div class="carousel-counter">${current + 1} / ${images.length}</div>
+    </div>`;
+
+  const slideEls = container.querySelectorAll('.carousel-slide');
+  const dotEls   = container.querySelectorAll('.carousel-dot');
+  const counter  = container.querySelector('.carousel-counter');
+
+  function goTo(idx) {
+    slideEls[current].classList.remove('active');
+    dotEls[current].classList.remove('active');
+    current = (idx + images.length) % images.length;
+    slideEls[current].classList.add('active');
+    dotEls[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${images.length}`;
+  }
+
+  container.querySelector('.prev').addEventListener('click', () => goTo(current - 1));
+  container.querySelector('.next').addEventListener('click', () => goTo(current + 1));
+  dotEls.forEach(dot => dot.addEventListener('click', () => goTo(+dot.dataset.idx)));
+
+  // Keyboard navigation when content pane is focused
+  container.closest('#content').addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft')  goTo(current - 1);
+    if (e.key === 'ArrowRight') goTo(current + 1);
+  });
 }
 
 
@@ -896,11 +1083,16 @@ function openFile(id) {
   // Body
   document.getElementById('project-body').innerHTML = renderMarkdown(c.body || '');
 
-  // Images
+  // Images — carousel if > 1, single image if 1, hidden if none
   const imagesEl = document.getElementById('project-images');
-  imagesEl.innerHTML = (c.images || []).map(src =>
-    `<img src="${src}" alt="" loading="lazy" />`
-  ).join('');
+  const imgs = c.images || [];
+  if (imgs.length === 0) {
+    imagesEl.innerHTML = '';
+  } else if (imgs.length === 1) {
+    imagesEl.innerHTML = `<img src="${imgs[0]}" alt="" loading="lazy" style="max-width:100%;border-radius:8px;border:1px solid var(--border);" />`;
+  } else {
+    renderCarousel(imagesEl, imgs);
+  }
 
   // Show/hide panels
   document.getElementById('welcome').style.display = 'none';
