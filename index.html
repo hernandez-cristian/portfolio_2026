@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface-hover: #1c2230;
+      --border: #21262d;
+      --border-subtle: #30363d;
+      --text: #e6edf3;
+      --text-muted: #7d8590;
+      --text-dim: #484f58;
+      --accent: #58a6ff;
+      --accent-dim: #1f3352;
+      --tag-bg: #21262d;
+      --tag-text: #8b949e;
+      --folder-color: #c9a22e;
+      --skill-color: #58a6ff;
+      --sidebar-width: 280px;
+      --font-mono: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+      --font-sans: -apple-system, "Segoe UI", system-ui, sans-serif;
+    }
+
+    /* ── Light theme (Finder palette) ── */
+    :root.light {
+      --bg: #ffffff;
+      --surface: #e8e8e8;
+      --surface-hover: #d0d0d0;
+      --border: #c8c8c8;
+      --border-subtle: #d4d4d4;
+      --text: #1c1c1e;
+      --text-muted: #3c3c3e;
+      --text-dim: #6c6c70;
+      --accent: #007aff;
+      --accent-dim: #ddeeff;
+      --tag-bg: #efefef;
+      --tag-text: #3c3c3e;
+      --folder-color: #007aff;
+      --skill-color: #007aff;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.6;
+      overflow: hidden;
+    }
+
+    /* ── Layout ── */
+    #app {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: var(--sidebar-width);
+      min-width: var(--sidebar-width);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Mobile top bar ── */
+    #mobile-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    #hamburger {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+    }
+
+    #hamburger svg { width: 20px; height: 20px; }
+
+    #mobile-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    #mobile-theme-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+    }
+
+    #mobile-theme-toggle svg { width: 18px; height: 18px; }
+
+    /* ── Mobile back button (inside content pane) ── */
+    #back-btn {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--accent);
+      font-family: var(--font-sans);
+      padding: 0;
+      margin-bottom: 28px;
+    }
+
+    #back-btn svg { width: 16px; height: 16px; }
+
+    /* ── Overlay (mobile drawer backdrop) ── */
+    #overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 99;
+    }
+
+    #overlay.visible { display: block; }
+
+    #sidebar-header {
+      padding: 20px 16px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #sidebar-header .name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+
+    #sidebar-header .role {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    #sidebar-search {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #sidebar-search input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      color: var(--text);
+      font-family: var(--font-sans);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    #sidebar-search input::placeholder { color: var(--text-dim); }
+    #sidebar-search input:focus { border-color: var(--accent); }
+
+    #tree {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    #tree::-webkit-scrollbar { width: 4px; }
+    #tree::-webkit-scrollbar-track { background: transparent; }
+    #tree::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 2px; }
+
+    /* ── Tree nodes ── */
+    .tree-folder, .tree-file {
+      user-select: none;
+    }
+
+    .tree-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      cursor: pointer;
+      border-radius: 0;
+      transition: background 0.1s;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .tree-row:hover { background: var(--surface-hover); }
+    .tree-row.active { background: var(--accent-dim); color: var(--accent); }
+    .tree-row.active .tree-label { color: var(--accent); }
+
+    .tree-indent { display: flex; align-items: center; }
+
+    .tree-chevron {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      color: var(--text-dim);
+      transition: transform 0.15s;
+    }
+
+    .tree-chevron.open { transform: rotate(90deg); }
+    .tree-chevron-placeholder { width: 14px; flex-shrink: 0; }
+
+    .tree-icon {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      color: var(--text-muted);
+    }
+
+    .tree-icon.folder { color: var(--folder-color); }
+    .tree-icon.file { color: var(--text-dim); }
+    .tree-icon--skill { color: var(--skill-color); }
+    .tree-row.active .tree-icon { color: var(--accent); }
+
+    .tree-label {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: var(--font-mono);
+    }
+
+    .tree-children { display: none; }
+    .tree-children.open { display: block; }
+
+    /* ── Content pane ── */
+    #content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 48px 60px;
+      background: var(--bg);
+      min-width: 0;
+    }
+
+    #content::-webkit-scrollbar { width: 6px; }
+    #content::-webkit-scrollbar-track { background: transparent; }
+    #content::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 3px; }
+
+    /* ── Welcome state ── */
+    #welcome {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100%;
+      max-width: 560px;
+    }
+
+    #welcome .welcome-label {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    #welcome h1 {
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    #welcome p {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    #welcome .hint {
+      margin-top: 32px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    #welcome .hint-arrow {
+      width: 16px;
+      height: 16px;
+      color: var(--text-dim);
+    }
+
+    /* ── Project page ── */
+    #project-view { display: none; max-width: 720px; }
+
+    .project-breadcrumb {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+      margin-bottom: 28px;
+      letter-spacing: 0.04em;
+    }
+
+    .project-breadcrumb span { color: var(--text-dim); }
+    .project-breadcrumb .crumb-sep { margin: 0 6px; }
+
+    .project-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .project-subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 36px;
+    }
+
+    .project-tag {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      padding: 3px 9px;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .project-divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 32px;
+    }
+
+    /* ── Project body (markdown-rendered) ── */
+    .project-body {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    .project-body h2 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 36px 0 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-body h2:first-child { margin-top: 0; }
+
+    .project-body h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 24px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: var(--font-mono);
+    }
+
+    .project-body p {
+      margin-bottom: 16px;
+    }
+
+    .project-body p:last-child { margin-bottom: 0; }
+
+    .project-body strong { color: var(--text); font-weight: 600; }
+    .project-body em { font-style: italic; }
+
+    /* ── Callout block (> blockquote) ── */
+    .project-body blockquote {
+      margin: 24px 0;
+      padding: 14px 18px;
+      background: var(--accent-dim);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .project-body blockquote strong { color: var(--accent); }
+
+    .project-images {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .project-images img {
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    /* ── Skill badge ── */
+    .skill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--accent);
+      margin-bottom: 28px;
+    }
+
+    .skill-badge svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* ── Resize handle ── */
+    #resize-handle {
+      width: 4px;
+      background: transparent;
+      cursor: col-resize;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    #resize-handle:hover, #resize-handle.dragging { background: var(--accent); }
+
+    /* ── Tablet (600–767px) ── */
+    @media (max-width: 767px) and (min-width: 600px) {
+      :root { --sidebar-width: 220px; }
+      #content { padding: 36px 32px; }
+      .project-title { font-size: 22px; }
+    }
+
+    /* ── Mobile (< 600px) ── */
+    @media (max-width: 599px) {
+      html, body { overflow: auto; }
+
+      #app {
+        flex-direction: column;
+        height: 100%;
+        min-height: 100vh;
+      }
+
+      /* Show mobile top bar */
+      #mobile-bar { display: flex; }
+
+      /* Sidebar becomes a fixed drawer */
+      #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 280px;
+        min-width: 280px;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+      }
+
+      #sidebar.open {
+        transform: translateX(0);
+      }
+
+      /* Hide resize handle on mobile */
+      #resize-handle { display: none; }
+
+      /* Hide desktop theme toggle — mobile bar has its own */
+      #theme-toggle { display: none; }
+
+      /* Content pane fills full screen */
+      #content {
+        flex: 1;
+        padding: 24px 20px;
+        overflow-y: auto;
+        height: calc(100vh - 45px);
+      }
+
+      /* Show back button inside project view */
+      #back-btn { display: flex; }
+
+      /* Scale down typography */
+      .project-title { font-size: 22px; }
+      #welcome h1 { font-size: 24px; }
+
+      /* Hint arrow points up on mobile (sidebar is above) */
+      .hint-arrow { transform: rotate(90deg); }
+    }
+
+    /* ── No results ── */
+    .no-results {
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    /* ── Theme toggle button ── */
+    #theme-toggle {
+      background: none;
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      cursor: pointer;
+      padding: 4px 6px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      flex-shrink: 0;
+    }
+
+    #theme-toggle:hover {
+      color: var(--text);
+      border-color: var(--text-muted);
+      background: var(--surface-hover);
+    }
+
+    #theme-toggle svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+    }
+
+    /* transition all color vars smoothly */
+    *, *::before, *::after {
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
+    }
+  </style>
+</head>
+<body>
+<div id="overlay"></div>
+<div id="app">
+  <!-- Mobile top bar (hidden on desktop) -->
+  <div id="mobile-bar">
+    <button id="hamburger" aria-label="Open navigation">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+    <span class="mobile-title" id="mobile-title-text">Portfolio</span>
+    <button id="mobile-theme-toggle" aria-label="Toggle theme">
+      <!-- icon injected by JS -->
+    </button>
+  </div>
+
+  <nav id="sidebar">
+    <div id="sidebar-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+      <div>
+        <div class="name" id="meta-name">—</div>
+        <div class="role" id="meta-title">—</div>
+      </div>
+      <button id="theme-toggle" title="Toggle light/dark mode" aria-label="Toggle light/dark mode">
+        <!-- icon injected by JS -->
+      </button>
+    </div>
+    <div id="sidebar-search">
+      <input type="text" id="search-input" placeholder="Search files..." autocomplete="off" spellcheck="false" />
+    </div>
+    <div id="tree"></div>
+  </nav>
+
+  <div id="resize-handle"></div>
+
+  <main id="content">
+    <div id="welcome">
+      <div class="welcome-label">Portfolio</div>
+      <h1 id="welcome-name">—</h1>
+      <p id="welcome-tagline">—</p>
+      <div class="hint">
+        <svg class="hint-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Select a file to view a project
+      </div>
+    </div>
+
+    <div id="project-view">
+      <button id="back-btn" aria-label="Back to file list">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+        All projects
+      </button>
+      <div class="project-breadcrumb" id="project-breadcrumb"></div>
+      <div id="skill-badge-container"></div>
+      <h1 class="project-title" id="project-title"></h1>
+      <p class="project-subtitle" id="project-subtitle"></p>
+      <div class="project-tags" id="project-tags"></div>
+      <div class="project-divider"></div>
+      <div class="project-body" id="project-body"></div>
+      <div class="project-images" id="project-images"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ─── Load spec ───────────────────────────────────────────────────────────────
+async function loadSpec() {
+  try {
+    const res = await fetch('spec.json');
+    if (!res.ok) throw new Error('spec.json not found');
+    return await res.json();
+  } catch (e) {
+    console.error('Failed to load spec.json:', e);
+    return null;
+  }
+}
+
+// ─── State ───────────────────────────────────────────────────────────────────
+let spec = null;
+let activeFileId = null;
+let openFolders = new Set();
+let allFiles = []; // flat list for search
+
+// ─── SVG icons ───────────────────────────────────────────────────────────────
+const ICONS = {
+  chevron: `<svg class="tree-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>`,
+  folder: `<svg class="tree-icon folder" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 012-2h5l2 2h7a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>`,
+  file: `<svg class="tree-icon file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>`,
+  skill: `<svg class="tree-icon tree-icon--skill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>`,
+};
+
+// ─── Flatten tree for search ──────────────────────────────────────────────────
+function flattenTree(nodes, breadcrumb = []) {
+  nodes.forEach(node => {
+    if (node.type === 'file') {
+      allFiles.push({ ...node, breadcrumb: [...breadcrumb] });
+    } else if (node.type === 'folder' && node.children) {
+      flattenTree(node.children, [...breadcrumb, node.label]);
+    }
+  });
+}
+
+// ─── Render tree ─────────────────────────────────────────────────────────────
+function renderTree(nodes, depth = 0, parentIsSkills = false) {
+  const container = document.createDocumentFragment();
+
+  nodes.forEach(node => {
+    const isSkillsFolder = node.id === 'skills';
+    const isSkillFile = parentIsSkills || (node.id && node.id.startsWith('skill-'));
+
+    if (node.type === 'folder') {
+      const folderEl = document.createElement('div');
+      folderEl.className = 'tree-folder';
+      folderEl.dataset.id = node.id;
+
+      const isOpen = openFolders.has(node.id);
+
+      const row = document.createElement('div');
+      row.className = 'tree-row';
+      row.style.paddingLeft = `${12 + depth * 16}px`;
+      row.innerHTML = `
+        <span class="tree-chevron ${isOpen ? 'open' : ''}">${ICONS.chevron.match(/>(.*)</s)?.[1] ? '' : ''}</span>
+        ${ICONS.folder}
+        <span class="tree-label">${node.label}</span>
+      `;
+      // Re-render chevron properly
+      const chevronSpan = document.createElement('span');
+      chevronSpan.innerHTML = ICONS.chevron;
+      const chevronSvg = chevronSpan.querySelector('svg');
+      if (isOpen) chevronSvg.classList.add('open');
+      row.innerHTML = '';
+      row.appendChild(chevronSvg);
+      row.insertAdjacentHTML('beforeend', ICONS.folder);
+      const label = document.createElement('span');
+      label.className = 'tree-label';
+      label.textContent = node.label;
+      row.appendChild(label);
+
+      const children = document.createElement('div');
+      children.className = `tree-children ${isOpen ? 'open' : ''}`;
+      if (node.children) {
+        children.appendChild(renderTree(node.children, depth + 1, isSkillsFolder));
+      }
+
+      row.addEventListener('click', () => {
+        const open = openFolders.has(node.id);
+        if (open) {
+          openFolders.delete(node.id);
+          chevronSvg.classList.remove('open');
+          children.classList.remove('open');
+        } else {
+          openFolders.add(node.id);
+          chevronSvg.classList.add('open');
+          children.classList.add('open');
+        }
+      });
+
+      folderEl.appendChild(row);
+      folderEl.appendChild(children);
+      container.appendChild(folderEl);
+
+    } else if (node.type === 'file') {
+      const fileEl = document.createElement('div');
+      fileEl.className = 'tree-file';
+
+      const row = document.createElement('div');
+      row.className = `tree-row ${activeFileId === node.id ? 'active' : ''}`;
+      row.style.paddingLeft = `${12 + depth * 16 + 14}px`;
+      row.dataset.fileId = node.id;
+
+      const iconHtml = isSkillFile ? ICONS.skill : ICONS.file;
+      row.innerHTML = iconHtml;
+      const lbl = document.createElement('span');
+      lbl.className = 'tree-label';
+      lbl.textContent = node.label;
+      row.appendChild(lbl);
+
+      row.addEventListener('click', () => openFile(node.id));
+
+      fileEl.appendChild(row);
+      container.appendChild(fileEl);
+    }
+  });
+
+  return container;
+}
+
+function rebuildTree(nodes) {
+  const treeEl = document.getElementById('tree');
+  treeEl.innerHTML = '';
+  treeEl.appendChild(renderTree(nodes));
+}
+
+// ─── Markdown renderer ───────────────────────────────────────────────────────
+function renderMarkdown(md) {
+  // Escape raw HTML to prevent injection
+  const escape = s => s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  // Inline formatting: bold, italic
+  const inline = s => s
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+  const lines = md.split('\n');
+  const output = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // H2
+    if (/^## /.test(line)) {
+      output.push(`<h2>${inline(escape(line.slice(3).trim()))}</h2>`);
+      i++; continue;
+    }
+
+    // H3
+    if (/^### /.test(line)) {
+      output.push(`<h3>${inline(escape(line.slice(4).trim()))}</h3>`);
+      i++; continue;
+    }
+
+    // Blockquote — collect consecutive > lines
+    if (/^> /.test(line)) {
+      const bqLines = [];
+      while (i < lines.length && /^> /.test(lines[i])) {
+        bqLines.push(inline(escape(lines[i].slice(2))));
+        i++;
+      }
+      output.push(`<blockquote>${bqLines.join('<br>')}</blockquote>`);
+      continue;
+    }
+
+    // Blank line — skip
+    if (line.trim() === '') { i++; continue; }
+
+    // Paragraph — collect consecutive non-special lines
+    const paraLines = [];
+    while (
+      i < lines.length &&
+      lines[i].trim() !== '' &&
+      !/^#{2,3} /.test(lines[i]) &&
+      !/^> /.test(lines[i])
+    ) {
+      paraLines.push(inline(escape(lines[i])));
+      i++;
+    }
+    if (paraLines.length) output.push(`<p>${paraLines.join('<br>')}</p>`);
+  }
+
+  return output.join('\n');
+}
+
+
+// ─── Open file ───────────────────────────────────────────────────────────────
+function openFile(id) {
+  activeFileId = id;
+
+  // Find file in flat list
+  const fileData = allFiles.find(f => f.id === id);
+  if (!fileData) return;
+
+  // Update active state in tree
+  document.querySelectorAll('.tree-row').forEach(r => r.classList.remove('active'));
+  const activeRow = document.querySelector(`.tree-row[data-file-id="${id}"]`);
+  if (activeRow) activeRow.classList.add('active');
+
+  // Build breadcrumb
+  const crumbs = [...fileData.breadcrumb, fileData.label];
+  document.getElementById('project-breadcrumb').innerHTML =
+    crumbs.map((c, i) => i < crumbs.length - 1
+      ? `<span>${c}</span><span class="crumb-sep">/</span>`
+      : `<span style="color:var(--text-muted)">${c}</span>`
+    ).join('');
+
+  // Skill badge
+  const badgeContainer = document.getElementById('skill-badge-container');
+  if (id.startsWith('skill-')) {
+    badgeContainer.innerHTML = `<div class="skill-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+      </svg>
+      SKILL.md
+    </div>`;
+  } else {
+    badgeContainer.innerHTML = '';
+  }
+
+  const c = fileData.content;
+  document.getElementById('project-title').textContent = c.title;
+  document.getElementById('project-subtitle').textContent = c.subtitle;
+
+  // Tags
+  const tagsEl = document.getElementById('project-tags');
+  tagsEl.innerHTML = (c.tags || []).map(t => `<span class="project-tag">${t}</span>`).join('');
+
+  // Body
+  document.getElementById('project-body').innerHTML = renderMarkdown(c.body || '');
+
+  // Images
+  const imagesEl = document.getElementById('project-images');
+  imagesEl.innerHTML = (c.images || []).map(src =>
+    `<img src="${src}" alt="" loading="lazy" />`
+  ).join('');
+
+  // Show/hide panels
+  document.getElementById('welcome').style.display = 'none';
+  const pv = document.getElementById('project-view');
+  pv.style.display = 'block';
+
+  // Scroll content to top
+  document.getElementById('content').scrollTop = 0;
+
+  // On mobile: close the drawer after selecting a file
+  if (window.innerWidth < 600) closeMobileDrawer();
+}
+
+// ─── Search ──────────────────────────────────────────────────────────────────
+function handleSearch(query) {
+  const treeEl = document.getElementById('tree');
+  treeEl.innerHTML = '';
+
+  if (!query.trim()) {
+    treeEl.appendChild(renderTree(spec.tree));
+    return;
+  }
+
+  const q = query.toLowerCase();
+  const matches = allFiles.filter(f =>
+    f.label.toLowerCase().includes(q) ||
+    (f.content && f.content.body && f.content.body.toLowerCase().includes(q))
+  );
+
+  if (matches.length === 0) {
+    treeEl.innerHTML = '<div class="no-results">No results found</div>';
+    return;
+  }
+
+  matches.forEach(file => {
+    const row = document.createElement('div');
+    row.className = `tree-row ${activeFileId === file.id ? 'active' : ''}`;
+    row.style.paddingLeft = '12px';
+    row.dataset.fileId = file.id;
+
+    const iconHtml = file.id.startsWith('skill-') ? ICONS.skill : ICONS.file;
+    row.innerHTML = iconHtml;
+    const lbl = document.createElement('span');
+    lbl.className = 'tree-label';
+    lbl.textContent = file.label;
+    row.appendChild(lbl);
+
+    row.addEventListener('click', () => openFile(file.id));
+    treeEl.appendChild(row);
+  });
+}
+
+// ─── Mobile drawer ────────────────────────────────────────────────────────────
+function openMobileDrawer() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('visible');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMobileDrawer() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('visible');
+  document.body.style.overflow = '';
+}
+
+function initMobile() {
+  document.getElementById('hamburger').addEventListener('click', openMobileDrawer);
+  document.getElementById('overlay').addEventListener('click', closeMobileDrawer);
+  document.getElementById('back-btn').addEventListener('click', () => {
+    // Return to welcome screen and close project view
+    document.getElementById('project-view').style.display = 'none';
+    document.getElementById('welcome').style.display = 'flex';
+    document.getElementById('content').scrollTop = 0;
+    // Clear active state
+    activeFileId = null;
+    document.querySelectorAll('.tree-row').forEach(r => r.classList.remove('active'));
+  });
+}
+
+// ─── Sidebar resize ────────────────────────────────────────────────────────────
+function initResize() {
+  const handle = document.getElementById('resize-handle');
+  const sidebar = document.getElementById('sidebar');
+  let dragging = false;
+  let startX = 0;
+  let startW = 0;
+
+  handle.addEventListener('mousedown', e => {
+    dragging = true;
+    startX = e.clientX;
+    startW = sidebar.offsetWidth;
+    handle.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const delta = e.clientX - startX;
+    const newW = Math.max(180, Math.min(480, startW + delta));
+    sidebar.style.width = newW + 'px';
+    sidebar.style.minWidth = newW + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    handle.classList.remove('dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+async function init() {
+  spec = await loadSpec();
+  if (!spec) {
+    document.getElementById('tree').innerHTML =
+      '<div class="no-results">Error: spec.json not found</div>';
+    return;
+  }
+
+  // Meta
+  document.title = spec.meta.name + ' — Portfolio';
+  document.getElementById('meta-name').textContent = spec.meta.name;
+  document.getElementById('meta-title').textContent = spec.meta.title;
+  document.getElementById('welcome-name').textContent = spec.meta.name;
+  document.getElementById('welcome-tagline').textContent = spec.meta.tagline;
+
+  // Flatten for search, open top-level folders by default
+  flattenTree(spec.tree);
+  spec.tree.forEach(node => {
+    if (node.type === 'folder') openFolders.add(node.id);
+  });
+
+  // Render
+  rebuildTree(spec.tree);
+  initResize();
+  initMobile();
+
+  // Search
+  document.getElementById('search-input').addEventListener('input', e => {
+    handleSearch(e.target.value);
+  });
+
+  // Theme toggle
+  initTheme();
+}
+
+// ─── Theme ────────────────────────────────────────────────────────────────────
+const ICON_MOON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`;
+const ICON_SUN  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+
+function setTheme(isLight) {
+  const root = document.documentElement;
+  // Update both toggles (desktop sidebar + mobile bar)
+  [document.getElementById('theme-toggle'),
+   document.getElementById('mobile-theme-toggle')].forEach(btn => {
+    if (!btn) return;
+    btn.innerHTML = isLight ? ICON_MOON : ICON_SUN;
+    btn.title = isLight ? 'Switch to dark mode' : 'Switch to light mode';
+  });
+  if (isLight) {
+    root.classList.add('light');
+  } else {
+    root.classList.remove('light');
+  }
+  localStorage.setItem('portfolio-theme', isLight ? 'light' : 'dark');
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('portfolio-theme');
+  const preferLight = saved === 'light' ||
+    (!saved && window.matchMedia('(prefers-color-scheme: light)').matches);
+  setTheme(preferLight);
+
+  // Wire both toggles to the same handler
+  ['theme-toggle', 'mobile-theme-toggle'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.addEventListener('click', () => {
+      setTheme(!document.documentElement.classList.contains('light'));
+    });
+  });
+}
+
+init();
+</script>
+</body>
+</html>

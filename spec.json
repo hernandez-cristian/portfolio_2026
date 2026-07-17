@@ -1,0 +1,114 @@
+{
+  "meta": {
+    "name": "Cristian Hernandez",
+    "title": "Content Designer & AI Systems",
+    "tagline": "Designing clarity at the intersection of language and technology."
+  },
+  "tree": [
+    {
+      "type": "folder",
+      "id": "content-design",
+      "label": "Content Design",
+      "children": [
+        {
+          "type": "file",
+          "id": "ai-enablement",
+          "label": "AI Enablement",
+          "content": {
+            "title": "AI Enablement",
+            "subtitle": "Content experience for IBMers",
+            "tags": ["Content Design", "AI", "Internal"],
+            "body": "I served as a Content Designer and Strategist for the Transformation & Operations team, where I worked on building an in-depth content experience for developers to enable them to onboard their applications to our internal AI technology, and learn more about how to integrate AI into their products.\n\nThis was one of the most challenging and satisfying projects I've ever worked on. I created an entire site dedicated to AI at IBM with the goal of transforming the business—starting internally. I drafted site ideas and explorations, researched existing content, wrote new content, built a web experience, and collaborated across teams.\n\n## Overview\nWhen the demand for consumer AI skyrocketed after the success of ChatGPT, it was imperative that we acted quickly to upskill IBMers in our AI technologies and explain how they could leverage IBM AI in their work. There were resources available to help, but they were scattered around our web ecosystem and in need of updates.\n\n## Stakeholders\nFor this project, I designed and wrote with the technical IBMer in mind. I had the chance to gather feedback from developers and share my ideas with them, and was in constant contact with Transformation & Operations leadership, sharing proposals and drafts regularly for feedback. Leadership also helped me understand the AI onboarding process, critical points of failure, and the current state of the content.\n\n> **The challenge:** How can I make it easier for technical and non-technical IBMers to learn about AI, understand watsonx, and onboard their products to the watsonx platform?\n\nInformation on how to onboard an application to our AI technology was spread throughout the web ecosystem. Instructions on the process were unclear, long, and complex.\n\nMy first task was to take inventory of the content that was already live. I documented what the content was about and took note of where it was placed within the ecosystem. With the help of leadership, I gathered insights into a running note.\n\nI also researched how the current onboarding process worked and the steps a user had to take to successfully onboard their application. I documented design flaws, unclear instructions, and ghost content.",
+            "images": []
+          }
+        },
+        {
+          "type": "file",
+          "id": "device-migration",
+          "label": "Device Migration Readiness",
+          "content": {
+            "title": "Device Migration Readiness",
+            "subtitle": "Conversational AI experience for device migration",
+            "tags": ["Conversational AI", "UX Writing", "Internal"],
+            "body": "Placeholder — add your project description here. What was the challenge? What did you design? What was the impact?",
+            "images": []
+          }
+        },
+        {
+          "type": "file",
+          "id": "watsonx-think",
+          "label": "watsonx Orchestrate, Think",
+          "content": {
+            "title": "watsonx Orchestrate, Think",
+            "subtitle": "Long-form content introducing IBM's agentic AI solution",
+            "tags": ["Long-form", "AI", "Customer-facing"],
+            "body": "Placeholder — add your project description here. What was the challenge? What did you design? What was the impact?",
+            "images": []
+          }
+        },
+        {
+          "type": "file",
+          "id": "windows-setup",
+          "label": "Set Up Your Windows PC",
+          "content": {
+            "title": "Set Up Your Windows PC",
+            "subtitle": "Windows setup guide for new and existing IBMers",
+            "tags": ["Technical Writing", "Internal", "Tooling"],
+            "body": "Placeholder — add your project description here. What was the challenge? What did you design? What was the impact?",
+            "images": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "id": "ai-systems",
+      "label": "AI Systems",
+      "children": [
+        {
+          "type": "file",
+          "id": "model-ux",
+          "label": "Model UX Content Design",
+          "content": {
+            "title": "Model UX Content Design",
+            "subtitle": "Writing exercises in LLM model design",
+            "tags": ["LLM", "Prompt Engineering", "System Design"],
+            "body": "Placeholder — add your project description here. This is a collection of exercises including ground rules and system-prompt writing.",
+            "images": []
+          }
+        },
+        {
+          "type": "folder",
+          "id": "skills",
+          "label": "Skills",
+          "children": [
+            {
+              "type": "file",
+              "id": "skill-ibm-style-editor",
+              "label": "ibm-style-editor",
+              "content": {
+                "title": "ibm-style-editor",
+                "subtitle": "Automated IBM Style editorial pipeline for .docx and .pdf",
+                "tags": ["Skill", "IBM Style", "Automation", "Editorial"],
+                "body": "A workflow skill that orchestrates a full IBM Style editorial review on a `.docx` or `.pdf` document. It runs deterministic linting stages (Vale, sentence streamlining, grammar, UI compliance) followed by three sequential LLM passes that annotate the original document with Word balloon comments or PDF sticky notes — leaving a `_MasterReview` file the writer can work from directly.\n\nDesigned to reduce the manual effort of style reviews while preserving the writer's voice. The pipeline is self-evaluating: it scores its own output after each run.",
+                "images": []
+              }
+            },
+            {
+              "type": "file",
+              "id": "skill-ibm-style-coach",
+              "label": "ibm-style-coach",
+              "content": {
+                "title": "ibm-style-coach",
+                "subtitle": "Writing coach for IBM Style compliance",
+                "tags": ["Skill", "IBM Style", "Coaching", "Writing"],
+                "body": "A coaching skill that helps writers improve their IBM Style compliance — without just handing them the corrections. Works across three modes: DOCX, PDF, and inline text pasted directly into chat.\n\nFor each violation found, the coach explains *why* the rule exists, what to watch for going forward, and offers a suggested rewrite on the first occurrence only — so writers learn the pattern, not just accept a fix. Designed around the principle that good editorial feedback builds writer capability over time.",
+                "images": []
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
