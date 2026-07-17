@@ -413,6 +413,27 @@
 
     .project-body blockquote strong { color: var(--accent); }
 
+    /* ── Unordered list ── */
+    .project-body ul {
+      margin: 0 0 16px 0;
+      padding-left: 20px;
+      list-style: none;
+    }
+
+    .project-body ul li {
+      position: relative;
+      padding-left: 14px;
+      margin-bottom: 8px;
+      color: var(--text-muted);
+    }
+
+    .project-body ul li::before {
+      content: '–';
+      position: absolute;
+      left: 0;
+      color: var(--text-dim);
+    }
+
     .project-images {
       margin-top: 40px;
       display: flex;
@@ -800,13 +821,25 @@ function renderMarkdown(md) {
     // Blank line — skip
     if (line.trim() === '') { i++; continue; }
 
+    // Unordered list — collect consecutive - lines
+    if (/^- /.test(line)) {
+      const items = [];
+      while (i < lines.length && /^- /.test(lines[i])) {
+        items.push(`<li>${inline(escape(lines[i].slice(2)))}</li>`);
+        i++;
+      }
+      output.push(`<ul>${items.join('')}</ul>`);
+      continue;
+    }
+
     // Paragraph — collect consecutive non-special lines
     const paraLines = [];
     while (
       i < lines.length &&
       lines[i].trim() !== '' &&
       !/^#{2,3} /.test(lines[i]) &&
-      !/^> /.test(lines[i])
+      !/^> /.test(lines[i]) &&
+      !/^- /.test(lines[i])
     ) {
       paraLines.push(inline(escape(lines[i])));
       i++;
