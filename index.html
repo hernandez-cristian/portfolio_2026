@@ -1190,8 +1190,6 @@ function openFile(id) {
 }
 
 // ─── Table of Contents ───────────────────────────────────────────────────────
-let tocObserver = null;
-
 function buildToc() {
   const tocPane  = document.getElementById('toc-pane');
   const tocList  = document.getElementById('toc-list');
@@ -1199,8 +1197,11 @@ function buildToc() {
   const contentEl = document.getElementById('content');
   const app      = document.getElementById('app');
 
-  // Disconnect any previous observer
-  if (tocObserver) { tocObserver.disconnect(); tocObserver = null; }
+  // Remove any previous scroll listener
+  if (contentEl._tocScrollHandler) {
+    contentEl.removeEventListener('scroll', contentEl._tocScrollHandler);
+    contentEl._tocScrollHandler = null;
+  }
 
   // Collect h2 / h3 headings rendered inside project-body
   const headings = Array.from(bodyEl.querySelectorAll('h2, h3'));
@@ -1228,55 +1229,44 @@ function buildToc() {
            `<a href="#${h.id}">${h.textContent.trim()}</a></li>`;
   }).join('');
 
-  // Show the pane
-  tocPane.style.display = '';
+  // Show the pane — must set an explicit value; unsetting leaves CSS 'display:none' in effect
+  tocPane.style.display = 'block';
   app.classList.add('has-toc');
 
-  // Smooth-scroll within the content pane (not the window) on link click
+  // Smooth-scroll inside #content (the actual scrollable container)
   tocList.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', e => {
       e.preventDefault();
-      const target = bodyEl.querySelector('#' + a.getAttribute('href').slice(1));
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      const targetId = a.getAttribute('href').slice(1);
+      const target = document.getElementById(targetId);
+      if (!target) return;
+      // Get the heading's position relative to #content's scroll origin
+      const contentTop = contentEl.getBoundingClientRect().top;
+      const targetTop  = target.getBoundingClientRect().top;
+      contentEl.scrollBy({ top: targetTop - contentTop - 16, behavior: 'smooth' });
     });
   });
 
-  // Scroll-spy via IntersectionObserver on the content pane
-  const items = tocList.querySelectorAll('.toc-item');
-
-  tocObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      const item = tocList.querySelector(`[data-toc-id="${entry.target.id}"]`);
-      if (!item) return;
-      if (entry.isIntersecting) {
-        item.classList.add('active');
-      } else {
-        item.classList.remove('active');
-      }
+  // Scroll-spy: highlight whichever heading is nearest the top of the viewport
+  // Strategy: on every scroll event, find the last heading whose top <= 30% of #content height
+  function updateActiveTocItem() {
+    const threshold = contentEl.getBoundingClientRect().top + contentEl.clientHeight * 0.25;
+    let active = null;
+    headings.forEach(h => {
+      if (h.getBoundingClientRect().top <= threshold) active = h;
     });
+    tocList.querySelectorAll('.toc-item').forEach(item => {
+      item.classList.toggle('active', active && item.dataset.tocId === active.id);
+    });
+  }
 
-    // If nothing is intersecting (e.g. scrolled past all), keep the last item active
-    const anyActive = tocList.querySelector('.toc-item.active');
-    if (!anyActive && items.length) {
-      // Find the last heading that is above the viewport midpoint
-      const midY = contentEl.scrollTop + contentEl.clientHeight / 2;
-      let best = null;
-      headings.forEach(h => {
-        if (h.offsetTop <= midY) best = h;
-      });
-      if (best) {
-        tocList.querySelector(`[data-toc-id="${best.id}"]`)?.classList.add('active');
-      }
-    }
-  }, {
-    root: contentEl,
-    rootMargin: '0px 0px -70% 0px',
-    threshold: 0
-  });
+  // Run once immediately to set the initial active state
+  updateActiveTocItem();
 
-  headings.forEach(h => tocObserver.observe(h));
+  // Re-run on scroll
+  contentEl.addEventListener('scroll', updateActiveTocItem);
+  // Store cleanup ref on the element so we can remove it when the file changes
+  contentEl._tocScrollHandler = updateActiveTocItem;
 }
 
 // ─── Search ──────────────────────────────────────────────────────────────────
@@ -1339,10 +1329,14 @@ function initMobile() {
     document.getElementById('project-view').style.display = 'none';
     document.getElementById('welcome').style.display = 'flex';
     document.getElementById('content').scrollTop = 0;
-    // Hide TOC
+    // Hide TOC and remove scroll listener
     document.getElementById('toc-pane').style.display = 'none';
     document.getElementById('app').classList.remove('has-toc');
-    if (tocObserver) { tocObserver.disconnect(); tocObserver = null; }
+    const ce = document.getElementById('content');
+    if (ce._tocScrollHandler) {
+      ce.removeEventListener('scroll', ce._tocScrollHandler);
+      ce._tocScrollHandler = null;
+    }
     // Clear active state
     activeFileId = null;
     document.querySelectorAll('.tree-row').forEach(r => r.classList.remove('active'));
