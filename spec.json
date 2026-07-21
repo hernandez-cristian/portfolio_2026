@@ -121,18 +121,6 @@
       "label": "AI Systems",
       "children": [
         {
-          "type": "file",
-          "id": "model-ux",
-          "label": "Model UX Content Design",
-          "content": {
-            "title": "Model UX Content Design",
-            "subtitle": "Writing exercises in LLM model design",
-            "tags": ["LLM", "Prompt Engineering", "System Design"],
-            "body": "Placeholder — add your project description here. This is a collection of exercises including ground rules and system-prompt writing.",
-            "images": []
-          }
-        },
-        {
           "type": "folder",
           "id": "skills",
           "label": "Skills",
@@ -145,8 +133,10 @@
                 "title": "ibm-style-editor",
                 "subtitle": "Automated IBM Style editorial pipeline for .docx and .pdf",
                 "tags": ["Skill", "IBM Style", "Automation", "Editorial"],
-                "body": "A workflow skill that orchestrates a full IBM Style editorial review on a `.docx` or `.pdf` document. It runs deterministic linting stages (Vale, sentence streamlining, grammar, UI compliance) followed by three sequential LLM passes that annotate the original document with Word balloon comments or PDF sticky notes — leaving a `_MasterReview` file the writer can work from directly.\n\nDesigned to reduce the manual effort of style reviews while preserving the writer's voice. The pipeline is self-evaluating: it scores its own output after each run.",
-                "images": []
+                "body": "I built ibm-style-editor as an AI skill for Bob — IBM's internal AI assistant — to automate the editorial review process for IBM Style compliance. Drop in a `.docx` or `.pdf`, and the skill runs a full multi-stage pipeline that catches everything from passive voice and undefined acronyms to broken UI instructions, then delivers a single annotated `_MasterReview` file ready to work from. What used to take hours of manual line editing now takes minutes, with consistent, repeatable results every time.\n\n## How it works\nThe pipeline runs in two paths — one for `.docx`, one for `.pdf` — and handles everything automatically from start to finish.",
+                "images": [
+                  "images/skills/ibm-style-editor-flow.svg"
+                ]
               }
             },
             {
@@ -157,8 +147,10 @@
                 "title": "ibm-style-coach",
                 "subtitle": "Writing coach for IBM Style compliance",
                 "tags": ["Skill", "IBM Style", "Coaching", "Writing"],
-                "body": "A coaching skill that helps writers improve their IBM Style compliance — without just handing them the corrections. Works across three modes: DOCX, PDF, and inline text pasted directly into chat.\n\nFor each violation found, the coach explains *why* the rule exists, what to watch for going forward, and offers a suggested rewrite on the first occurrence only — so writers learn the pattern, not just accept a fix. Designed around the principle that good editorial feedback builds writer capability over time.",
-                "images": []
+                "body": "I built ibm-style-coach as an AI skill for Bob — IBM's internal AI assistant — to help writers improve their IBM Style compliance without just handing them the answers. The skill works across three modes: DOCX, PDF, and inline text pasted straight into chat. For every violation it finds, the coach explains *why* the rule exists, tells you what to watch for next time, and offers a suggested rewrite on the first occurrence only — so you learn the pattern, not just accept a fix. It's designed around the idea that good feedback builds capability over time, not dependency.\n\n## How it works\nThe same analysis passes run in all three modes — the only difference is how you give it input and how it gives you the output.",
+                "images": [
+                  "images/skills/ibm-style-coach-flow.svg"
+                ]
               }
             }
           ]

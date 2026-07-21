@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 520" width="860" height="520" font-family="-apple-system, 'Segoe UI', system-ui, sans-serif">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1a237e;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#283593;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="stageGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e2a3a;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#151e2b;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="outputGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d2137;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#091929;stop-opacity:1"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#4a90d9"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="860" height="520" fill="#0d1117" rx="12"/>
+
+  <!-- Header bar -->
+  <rect x="0" y="0" width="860" height="60" fill="url(#headerGrad)" rx="12"/>
+  <rect x="0" y="48" width="860" height="12" fill="url(#headerGrad)"/>
+  <text x="36" y="22" font-size="11" fill="#90caf9" font-weight="600" letter-spacing="0.1em" text-anchor="start">SKILL</text>
+  <text x="36" y="42" font-size="18" fill="#ffffff" font-weight="700" letter-spacing="0.01em">ibm-style-editor — Pipeline Flow</text>
+  <text x="824" y="35" font-size="11" fill="#90caf9" text-anchor="end">DOCX  ·  PDF</text>
+
+  <!-- Input node -->
+  <rect x="32" y="86" width="130" height="52" rx="8" fill="#1e2a3a" stroke="#3a5068" stroke-width="1.2" filter="url(#shadow)"/>
+  <text x="97" y="108" font-size="11" fill="#7dd3fc" font-weight="600" text-anchor="middle">INPUT</text>
+  <text x="97" y="125" font-size="12" fill="#e2e8f0" font-weight="500" text-anchor="middle">.docx  /  .pdf</text>
+
+  <!-- Arrow: input → stage 1 -->
+  <line x1="162" y1="112" x2="188" y2="112" stroke="#4a90d9" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Stage boxes — deterministic row -->
+  <!-- S1 -->
+  <rect x="192" y="86" width="120" height="52" rx="8" fill="url(#stageGrad)" stroke="#2d4a63" stroke-width="1.2" filter="url(#shadow)"/>
+  <text x="252" y="106" font-size="9.5" fill="#fb923c" font-weight="700" text-anchor="middle" letter-spacing="0.06em">STAGE 1</text>
+  <text x="252" y="121" font-size="11" fill="#e2e8f0" text-anchor="middle">Structural</text>
+  <text x="252" y="133" font-size="9.5" fill="#94a3b8" text-anchor="middle">batch errors · 7 checks</text>
+
+  <!-- Arrow -->
+  <line x1="312" y1="112" x2="336" y2="112" stroke="#4a90d9" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- S1.5 -->
+  <rect x="340" y="86" width="120" height="52" rx="8" fill="url(#stageGrad)" stroke="#2d4a63" stroke-width="1.2" filter="url(#shadow)"/>
+  <text x="400" y="106" font-size="9.5" fill="#fb923c" font-weight="700" text-anchor="middle" letter-spacing="0.06em">STAGE 1.5</text>
+  <text x="400" y="121" font-size="11" fill="#e2e8f0" text-anchor="middle">Vale Linter</text>
+  <text x="400" y="133" font-size="9.5" fill="#94a3b8" text-anchor="middle">300+ rules · deterministic</text>
+
+  <!-- Arrow -->
+  <line x1="460" y1="112" x2="484" y2="112" stroke="#4a90d9" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- S2 -->
+  <rect x="488" y="86" width="120" height="52" rx="8" fill="url(#stageGrad)" stroke="#2d4a63" stroke-width="1.2" filter="url(#shadow)"/>
+  <text x="548" y="106" font-size="9.5" fill="#fb923c" font-weight="700" text-anchor="middle" letter-spacing="0.06em">STAGE 2</text>
+  <text x="548" y="121" font-size="11" fill="#e2e8f0" text-anchor="middle">Acronym Scan</text>
+  <text x="548" y="133" font-size="9.5" fill="#94a3b8" text-anchor="middle">undefined acronyms</text>
+
+  <!-- Row label -->
+  <text x="32" y="158" font-size="9" fill="#64748b" font-weight="600" letter-spacing="0.08em">DETERMINISTIC  ·  FAST</text>
+
+  <!-- Divider -->
+  <line x1="32" y1="166" x2="828" y2="166" stroke="#21262d" stroke-width="1"/>
+
+  <!-- LLM passes row label -->
+  <text x="32" y="185" font-size="9" fill="#64748b" font-weight="600" letter-spacing="0.08em">LLM PASSES  ·  SEQUENTIAL</text>
+
+  <!-- Arrow from S2 down to LLM row -->
+  <line x1="548" y1="138" x2="548" y2="175" stroke="#4a90d9" stroke-width="1.5"/>
+  <line x1="548" y1="175" x2="218" y2="175" stroke="#4a90d9" stroke-width="1.5"/>
+  <line x1="218" y1="175" x2="218" y2="190" stroke="#4a90d9" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- LLM box colors: purple tint -->
+  <!-- 3a -->
+  <rect x="158" y="194" width="150" height="60" rx="8" fill="#1a1040" stroke="#4c3580" stroke-width="1.2" filter="url(#shadow)"/>
+  <text x="233" y="215" font-size="9.5" fill="#c084fc" font-weight="700" text-anchor="middle" letter-spacing="0.06em">STAGE 3a</text>
+  <text x="233" y="230" font-size="12" fill="#e2e8f0" font-weight="500" text-anchor="middle">Streamlining</text>
+  <text x="233" y="245" font-size="9.5" fill="#94a3b8" text-anchor="middle">passive · hedges · wordiness</text>
+
+  <!-- arrow 3a → 3b -->
+  <line x1="308" y1="224" x2="332" y2="224" stroke="#4a90d9" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 3b -->
+  <rect x="336" y="194" width="150" height="60" rx="8" fill="#1a1040" stroke="#4c3580" stroke-width="1.2" filter="url(#shadow)"/>
+  <text x="411" y="215" font-size="9.5" fill="#c084fc" font-weight="700" text-anchor="middle" letter-spacing="0.06em">STAGE 3b</text>
+  <text x="411" y="230" font-size="12" fill="#e2e8f0" font-weight="500" text-anchor="middle">Grammar</text>
+  <text x="411" y="245" font-size="9.5" fill="#94a3b8" text-anchor="middle">prepositions · articles · words</text>
+
+  <!-- arrow 3b → 3c -->
+  <line x1="486" y1="224" x2="510" y2="224" stroke="#4a90d9" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 3c -->
+  <rect x="514" y="194" width="150" height="60" rx="8" fill="#1a1040" stroke="#4c3580" stroke-width="1.2" filter="url(#shadow)"/>
+  <text x="589" y="215" font-size="9.5" fill="#c084fc" font-weight="700" text-anchor="middle" letter-spacing="0.06em">STAGE 3c</text>
+  <text x="589" y="230" font-size="12" fill="#e2e8f0" font-weight="500" text-anchor="middle">UI Compliance</text>
+  <text x="589" y="245" font-size="9.5" fill="#94a3b8" text-anchor="middle">link text · vague refs</text>
+
+  <!-- Stage 4: Merge -->
+  <line x1="664" y1="224" x2="700" y2="224" stroke="#4a90d9" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="704" y="194" width="124" height="60" rx="8" fill="#0d2a1a" stroke="#1a5c35" stroke-width="1.2" filter="url(#shadow)"/>
+  <text x="766" y="215" font-size="9.5" fill="#4ade80" font-weight="700" text-anchor="middle" letter-spacing="0.06em">STAGE 4</text>
+  <text x="766" y="230" font-size="12" fill="#e2e8f0" font-weight="500" text-anchor="middle">Merge Reviews</text>
+  <text x="766" y="245" font-size="9.5" fill="#94a3b8" text-anchor="middle">all stages → one file</text>
+
+  <!-- Output section -->
+  <line x1="766" y1="254" x2="766" y2="288" stroke="#4a90d9" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Two output paths -->
+  <!-- DOCX output -->
+  <rect x="560" y="292" width="196" height="68" rx="8" fill="url(#outputGrad)" stroke="#1e4976" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="658" y="312" font-size="9.5" fill="#38bdf8" font-weight="700" text-anchor="middle" letter-spacing="0.06em">DOCX OUTPUT</text>
+  <text x="658" y="330" font-size="12" fill="#f1f5f9" font-weight="600" text-anchor="middle">_MasterReview.docx</text>
+  <text x="658" y="348" font-size="9.5" fill="#94a3b8" text-anchor="middle">Word balloon comments</text>
+
+  <!-- PDF output -->
+  <rect x="770" y="292" width="58" height="68" rx="8" fill="url(#outputGrad)" stroke="#1e4976" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="799" y="318" font-size="9" fill="#38bdf8" font-weight="700" text-anchor="middle" letter-spacing="0.05em">PDF</text>
+  <text x="799" y="335" font-size="9" fill="#f1f5f9" font-weight="600" text-anchor="middle">Master</text>
+  <text x="799" y="350" font-size="9" fill="#f1f5f9" font-weight="600" text-anchor="middle">Review</text>
+
+  <!-- Connector from merge to outputs -->
+  <line x1="766" y1="288" x2="766" y2="292" stroke="#4a90d9" stroke-width="1.5"/>
+  <line x1="658" y1="288" x2="658" y2="292" stroke="#4a90d9" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="799" y1="288" x2="799" y2="292" stroke="#4a90d9" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="658" y1="288" x2="799" y2="288" stroke="#4a90d9" stroke-width="1.5"/>
+
+  <!-- Bottom legend row -->
+  <rect x="32" y="392" width="780" height="104" rx="8" fill="#111820" stroke="#21262d" stroke-width="1"/>
+  <text x="52" y="414" font-size="9" fill="#64748b" font-weight="700" letter-spacing="0.08em">WHAT GETS FLAGGED</text>
+
+  <!-- Legend items -->
+  <rect x="52" y="424" width="10" height="10" rx="2" fill="#fb923c"/>
+  <text x="68" y="433" font-size="10" fill="#cbd5e1">Structural errors</text>
+  <text x="68" y="446" font-size="9" fill="#64748b">heading case, broken sentences, author notes</text>
+
+  <rect x="220" y="424" width="10" height="10" rx="2" fill="#facc15"/>
+  <text x="236" y="433" font-size="10" fill="#cbd5e1">Streamlining</text>
+  <text x="236" y="446" font-size="9" fill="#64748b">passive voice, wordiness, hedges</text>
+
+  <rect x="380" y="424" width="10" height="10" rx="2" fill="#f97316"/>
+  <text x="396" y="433" font-size="10" fill="#cbd5e1">Grammar</text>
+  <text x="396" y="446" font-size="9" fill="#64748b">prepositions, articles, wrong words</text>
+
+  <rect x="524" y="424" width="10" height="10" rx="2" fill="#60a5fa"/>
+  <text x="540" y="433" font-size="10" fill="#cbd5e1">UI Compliance</text>
+  <text x="540" y="446" font-size="9" fill="#64748b">link text, interaction methods</text>
+
+  <rect x="672" y="424" width="10" height="10" rx="2" fill="#94a3b8"/>
+  <text x="688" y="433" font-size="10" fill="#cbd5e1">Acronyms</text>
+  <text x="688" y="446" font-size="9" fill="#64748b">undefined on first use</text>
+
+  <!-- Divider -->
+  <line x1="52" y1="458" x2="792" y2="458" stroke="#21262d" stroke-width="1"/>
+  <text x="52" y="475" font-size="9.5" fill="#94a3b8">All findings merged into a single</text>
+  <text x="52" y="488" font-size="9.5" fill="#38bdf8" font-weight="600">_MasterReview file</text>
+  <text x="156" y="488" font-size="9.5" fill="#94a3b8">— open in Word or any PDF reader. No manual steps required.</text>
+</svg>
