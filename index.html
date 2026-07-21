@@ -1193,6 +1193,12 @@ function openFile(id) {
   document.getElementById('project-title').textContent = c.title;
   document.getElementById('project-subtitle').textContent = c.subtitle;
 
+  // Show project view immediately so all child elements are in a visible DOM
+  // tree — required for renderCarousel's container.closest('#content') to resolve
+  document.getElementById('welcome').style.display = 'none';
+  const pv = document.getElementById('project-view');
+  pv.style.display = 'block';
+
   // Tags
   const tagsEl = document.getElementById('project-tags');
   tagsEl.innerHTML = (c.tags || []).map(t => `<span class="project-tag">${t}</span>`).join('');
@@ -1260,11 +1266,6 @@ function openFile(id) {
       }
     });
   }
-
-  // Show/hide panels
-  document.getElementById('welcome').style.display = 'none';
-  const pv = document.getElementById('project-view');
-  pv.style.display = 'block';
 
   // Build TOC from rendered headings
   buildToc();
