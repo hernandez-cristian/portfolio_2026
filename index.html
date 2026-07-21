@@ -1242,14 +1242,17 @@ function openFile(id) {
       if (sec.images && sec.images.length) {
         const imgDiv = document.createElement('div');
         imgDiv.className = 'project-images';
+        secDiv.appendChild(imgDiv);
+        // Append secDiv to DOM *before* renderCarousel so closest('#content') resolves
+        sectionsEl.appendChild(secDiv);
         if (sec.images.length === 1) {
           imgDiv.innerHTML = `<img src="${sec.images[0]}" alt="" loading="lazy" style="max-width:100%;border-radius:8px;border:1px solid var(--border);" />`;
         } else {
           renderCarousel(imgDiv, sec.images);
         }
-        secDiv.appendChild(imgDiv);
+      } else {
+        sectionsEl.appendChild(secDiv);
       }
-      sectionsEl.appendChild(secDiv);
     });
   }
 
