@@ -621,6 +621,40 @@
       border: 1px solid var(--border);
     }
 
+    /* ── Script block ── */
+    .project-script-wrap {
+      margin-top: 40px;
+    }
+
+    .project-script-label {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .project-script {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 24px;
+      height: 240px;
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text-muted);
+      white-space: pre-wrap;
+      font-family: var(--font-sans);
+      resize: vertical;
+    }
+
+    .project-script::-webkit-scrollbar { width: 4px; }
+    .project-script::-webkit-scrollbar-track { background: transparent; }
+    .project-script::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 2px; }
+
     /* ── Skill badge ── */
     .skill-badge {
       display: inline-flex;
@@ -823,6 +857,7 @@
       <div class="project-tags" id="project-tags"></div>
       <div class="project-divider"></div>
       <div class="project-body" id="project-body"></div>
+      <div id="project-script-container"></div>
       <div class="project-images" id="project-images"></div>
       <div class="project-body" id="project-body-after" style="margin-top:32px;"></div>
     </div>
@@ -1163,6 +1198,18 @@ function openFile(id) {
 
   // Body
   document.getElementById('project-body').innerHTML = renderMarkdown(c.body || '');
+
+  // Script block (fixed-height scrollable box, shown only when spec has a 'script' field)
+  const scriptContainer = document.getElementById('project-script-container');
+  if (c.script) {
+    scriptContainer.innerHTML = `
+      <div class="project-script-wrap">
+        <div class="project-script-label">Script</div>
+        <div class="project-script">${c.script.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+      </div>`;
+  } else {
+    scriptContainer.innerHTML = '';
+  }
 
   // Images — carousel if > 1, single image if 1, hidden if none
   const imagesEl = document.getElementById('project-images');
