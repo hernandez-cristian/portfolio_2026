@@ -38,8 +38,15 @@
             "title": "Device Migration Readiness",
             "subtitle": "Conversational AI experience for device migration",
             "tags": ["Conversational AI", "UX Writing", "Internal"],
-            "body": "Placeholder — add your project description here. What was the challenge? What did you design? What was the impact?",
-            "images": []
+            "body": "Keeping more than 250,000 IBMers productive means treating every laptop as a mission-critical asset. When hardware fails—or simply reaches end-of-life—employees can't afford hours of downtime. As a Conversation Designer on IBM's IT Support Content Team, I created the end-to-end conversation flow for a new Device Migration experience that walks employees through the migration process.\n\n## Overview\nThrough analyzing user feedback, my team and I identified that there was a need for a chatbot flow within our AI assistant that helped users with device migrations.\n\nFrom historical search data and user feedback, we developed a comprehensive device migration conversation workflow that helps users migrate their data and settings to a new device, quickly and effortlessly.\n\n## Stakeholders\nThe stakeholders for this project were as follows:\n\n- IBMers\n- Executive leaders\n\n> **The challenge:** How can I reduce friction in the device migration process when an IBMer needs to move to a different computer?\n\n## Research\nMy first task was to make a comprehensive list of all topics IBMers were searching for when switching to a new computer. I documented the following:\n\n- Data storage options per platform\n- Internet settings and bookmarks migration\n- Passwords and their accompanying wallet apps\n\nNext, I created a flowchart of the conversation.\n\nLastly, I built out the flow within watsonx Orchestrate.\n\n## Draft\nThe device migration flow was written with clarity, empathy, and user trust at its core. I followed IBM Style principles to ensure every message was concise, action-oriented, and human.\n\nEach step in the flow used plain language, avoided jargon, and clearly guided users through technical processes without overwhelming them.\n\nTo align with IBM's voice, I did the following:\n\n- Used second person (\"you\") to speak directly to the user\n- Prioritized active voice and short sentences for quick comprehension\n- Applied progressive disclosure to keep screens uncluttered\n\nThe result was a flow that felt confident but approachable, and consistent with IBM's global standard for inclusive, user-first communication.\n\n## Quantitative wins\nThese are the metrics that were measured before and after the conversational flow was implemented:\n\n- Follow-up tickets per migration: 0.08, down from 1.2\n- CSAT score for device replacement: 4.7/5, up from 3.4/5\n\n## Qualitative wins\nI observed the following qualitative wins from user feedback:\n\n- Clear, conversational prompts reduced cognitive load and anxiety during a stressful hardware failure.\n- Progressive disclosure kept power users moving fast while offering more information for novices.",
+            "images": [
+              "images/device-migration/flow_1.png",
+              "images/device-migration/flow_2.png",
+              "images/device-migration/flow_3.png",
+              "images/device-migration/flow_4.png",
+              "images/device-migration/flow_5.png",
+              "images/device-migration/flow_6.png"
+            ]
           }
         },
         {
