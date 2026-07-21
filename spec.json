@@ -70,8 +70,47 @@
             "title": "Set Up Your Windows PC",
             "subtitle": "Windows setup guide for new and existing IBMers",
             "tags": ["Technical Writing", "Internal", "Tooling"],
-            "body": "Placeholder — add your project description here. What was the challenge? What did you design? What was the impact?",
-            "images": []
+            "body": "I served as a Technical Writer during this project, where I built and wrote an in-depth Windows setup guide for new and existing IBMers to enable them to start working or get back to work on their device.\n\nI created a Windows guide, tailored to IBM's setup process, with the goal of getting new IBMers online and working on their first day of employment, quickly and effortlessly. The guide was also created to help IBMers transitioning to new devices and IBMers who recently completed a computer reset due to technical issues. The draft and final product were created in Microsoft PowerPoint. The content in the guide was informed by the Windows platform team, user feedback, and CIO Design. I worked cross-functionally with these teams to publish this guide.",
+            "images": [
+              "images/ai-enablement/windows/win_1.webp",
+              "images/ai-enablement/windows/win_2.webp"
+            ],
+            "sections": [
+              {
+                "body": "## Overview\nBeing in the CIO, our mission is to enable IBMers to do their best work. That work starts with a fresh workstation and a simple setup process. Previously, the setup experience for new workstations was provided by managers. If help was needed, IBMers were asked to seek assistance from their managers. If help was still needed, IBMers could contact the help desk.\n\n## Stakeholders\nThe stakeholders for this project were as follows:\n\n- New IBMers assigned Windows devices\n- IBMers with new Windows devices\n- IBMers who recently completed a Windows device reset\n- Windows platform team\n\n> **The challenge:** How can we get an IBMer to set up their workstation quickly and with ease, without needing to allocate resources for support?\n\nThe setup experience at the time lacked convenience, ease, and usability. I, along with a team of other platform focals on Mac and mobile devices, collaborated and brainstormed how we would solve this problem and build a solution.\n\n## Research\nOur first task as platform focals was to analyze the setup process as it was, confirm the setup process was up to date with each platform Subject Matter Expert (SME), then brainstorm how to improve the setup process.\n\nWorking cross-functionally with the Windows platform team, I attended regular meetings and solicited feedback and information about the setup process. I documented setup screenshots, steps, and copy. The CIO Design team designed a new deck that would be used to present the information. The final solution would contain up-to-date instructions, screenshots, and an information architecture that reduced fatigue.",
+                "images": []
+              },
+              {
+                "body": "## Draft\nThe biggest hurdle was the wording and structure of the existing setup instructions. Content architecture was unorganized, copy had grammatical errors, and there was little to no formatting to help visually guide the user.\n\nAt its core, instructional copy needs to be written in plain language and must be able to be read and understood by someone with a 5th grade reading level. Copy shouldn't contain jargon, should have a friendly tone, and should be concise, only consisting of what's necessary for the user to do in a given moment. With this framework in mind, I set out to rewrite the copy.\n\nFirstly, since setup could take a few hours, and devices came with different levels of charge, it was imperative that the user start charging their PC as soon as they unboxed it. I included a generic picture of the Windows logo on a laptop.\n\nNext, after powering on the device, the user would arrive at their first menu. I documented the steps and bolded User Interface (UI) elements that the user was asked to interact with. This was done in accordance with Apple's style guide. I also included screenshots for additional context.",
+                "images": [
+                  "images/ai-enablement/windows/win_3.webp",
+                  "images/ai-enablement/windows/win_4.webp"
+                ]
+              },
+              {
+                "body": "Continuing on, I documented steps to help the user get connected to the internet, as this was necessary to get correctly enrolled with IBM. I made sure to emphasize that an internet connection was crucial to have for a successful device setup. I added screenshots of the setup process, wrote instructional copy with bolded UI elements, and added a disclaimer about setting up a Windows device without an internet connection.\n\nIt's at this point in the process that the user is asked to authenticate with the IBM network. This process walks the user through setting up IBM ID authentication methods to access their computer and additional internal resources. I also added a section about how to add an additional method, though not needed, to encourage maximum account security and access, in the case that a user forgets a method. To provide context, which also doubled as giving the user a natural break to rest, I documented when Windows would be in a \"working\" state, where the user would have to wait for an action to be completed by the system.\n\nNext, I added instructions on how to set up a Windows login method. I followed the same method I used when writing about the IBM ID authentication process.",
+                "images": [
+                  "images/ai-enablement/windows/win_5.webp",
+                  "images/ai-enablement/windows/win_6.webp",
+                  "images/ai-enablement/windows/win_7.webp",
+                  "images/ai-enablement/windows/win_8.webp"
+                ]
+              },
+              {
+                "body": "The next step I documented was what the user would see once their computer was set up. I added a screenshot of this to give more context. For more connection assistance, I added instructions on how to connect to the IBM intranet with a VPN, and how to connect to the IBM campus Wi-Fi. I broke this copy into steps to reduce cognitive load.",
+                "images": [
+                  "images/ai-enablement/windows/win_9.webp",
+                  "images/ai-enablement/windows/win_10.webp"
+                ]
+              },
+              {
+                "body": "Lastly, I added any information related to next steps for new and existing IBMers. Since existing IBMers are knowledgeable of IBM's new hire resources, I organized their copy to appear first so that they could quickly see they've completed their task.\n\nFor new IBMers, I added copy about helpful IBM resources that could be reviewed to aid in their productivity and communicate with their teams.\n\nThe last slide contains a hyperlink to our IT Support portal in the case the user has more questions and wants to learn more about their platform.\n\n## Enablement\nThis guide is now available through multiple means:\n\n- This guide is linked to a QR code attached to each Windows device box shipped to IBMers. When a user receives their device, they're guided to access the QR code for setup instructions.\n- This guide is hosted in an external-facing site with IBM ID authentication requirements for security purposes. This site serves as a different method to access instructions in the case that a user is getting help from a peer with setup or if a user has an extra device.\n- This guide has high visibility and has helped thousands of IBMers set up their Windows devices.\n\nI stay in contact with the Windows platform team to learn of any changes to the setup process so that I'm able to have the most current version of the guide available to users.",
+                "images": [
+                  "images/ai-enablement/windows/win_11.webp",
+                  "images/ai-enablement/windows/win_12.webp"
+                ]
+              }
+            ]
           }
         }
       ]

@@ -860,6 +860,7 @@
       <div id="project-script-container"></div>
       <div class="project-images" id="project-images"></div>
       <div class="project-body" id="project-body-after" style="margin-top:32px;"></div>
+      <div id="project-sections"></div>
     </div>
   </main>
 
@@ -1225,6 +1226,33 @@ function openFile(id) {
   // Body after carousel
   document.getElementById('project-body-after').innerHTML = renderMarkdown(c.body_after || '');
 
+  // Sections — each has { body, images[] } rendered inline, one after another
+  const sectionsEl = document.getElementById('project-sections');
+  sectionsEl.innerHTML = '';
+  if (c.sections && c.sections.length) {
+    c.sections.forEach(sec => {
+      const secDiv = document.createElement('div');
+      secDiv.style.marginTop = '32px';
+      if (sec.body) {
+        const bodyDiv = document.createElement('div');
+        bodyDiv.className = 'project-body';
+        bodyDiv.innerHTML = renderMarkdown(sec.body);
+        secDiv.appendChild(bodyDiv);
+      }
+      if (sec.images && sec.images.length) {
+        const imgDiv = document.createElement('div');
+        imgDiv.className = 'project-images';
+        if (sec.images.length === 1) {
+          imgDiv.innerHTML = `<img src="${sec.images[0]}" alt="" loading="lazy" style="max-width:100%;border-radius:8px;border:1px solid var(--border);" />`;
+        } else {
+          renderCarousel(imgDiv, sec.images);
+        }
+        secDiv.appendChild(imgDiv);
+      }
+      sectionsEl.appendChild(secDiv);
+    });
+  }
+
   // Show/hide panels
   document.getElementById('welcome').style.display = 'none';
   const pv = document.getElementById('project-view');
@@ -1254,11 +1282,13 @@ function buildToc() {
     contentEl._tocScrollHandler = null;
   }
 
-  // Collect h2 / h3 headings from both body sections
-  const bodyAfterEl = document.getElementById('project-body-after');
+  // Collect h2 / h3 headings from all body sections
+  const bodyAfterEl  = document.getElementById('project-body-after');
+  const sectionsEl2  = document.getElementById('project-sections');
   const headings = [
     ...Array.from(bodyEl.querySelectorAll('h2, h3')),
-    ...Array.from(bodyAfterEl.querySelectorAll('h2, h3'))
+    ...Array.from(bodyAfterEl.querySelectorAll('h2, h3')),
+    ...Array.from(sectionsEl2.querySelectorAll('h2, h3'))
   ];
 
   if (headings.length === 0) {
