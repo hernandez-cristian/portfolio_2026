@@ -1,23 +1,27 @@
 {
   "meta": {
     "name": "Cristian Hernandez",
-    "title": "Content Designer & AI Systems",
+    "title": "Content Engineer",
     "tagline": "Designing clarity at the intersection of language and technology."
   },
   "tree": [
     {
       "type": "folder",
       "id": "content-design",
-      "label": "Content Design",
+      "label": "Content",
       "children": [
         {
           "type": "file",
           "id": "ai-enablement",
-          "label": "AI Enablement",
+          "label": "AI enablement",
           "content": {
-            "title": "AI Enablement",
+            "title": "AI enablement",
             "subtitle": "Content experience for IBMers",
-            "tags": ["Content Design", "AI", "Internal"],
+            "tags": [
+              "Content Design",
+              "AI",
+              "Internal"
+            ],
             "body": "I served as a Content Designer and Strategist for the Transformation & Operations team, where I worked on building an in-depth content experience for developers to enable them to onboard their applications to our internal AI technology, and learn more about how to integrate AI into their products.\n\nThis was one of the most challenging and satisfying projects I've ever worked on. I created an entire site dedicated to AI at IBM with the goal of transforming the business—starting internally. I drafted site ideas and explorations, researched existing content, wrote new content, built a web experience, and collaborated across teams.\n\n## Overview\nWhen the demand for consumer AI skyrocketed after the success of ChatGPT, it was imperative that we acted quickly to upskill IBMers in our AI technologies and explain how they could leverage IBM AI in their work. There were resources available to help, but they were scattered around our web ecosystem and in need of updates.\n\n## Stakeholders\nFor this project, I designed and wrote with the technical IBMer in mind. I had the chance to gather feedback from developers and share my ideas with them, and was in constant contact with Transformation & Operations leadership, sharing proposals and drafts regularly for feedback. Leadership also helped me understand the AI onboarding process, critical points of failure, and the current state of the content.\n\n> **The challenge:** How can I make it easier for technical and non-technical IBMers to learn about AI, understand watsonx, and onboard their products to the watsonx platform?\n\nInformation on how to onboard an application to our AI technology was spread throughout the web ecosystem. Instructions on the process were unclear, long, and complex.\n\nMy first task was to take inventory of the content that was already live. I documented what the content was about and took note of where it was placed within the ecosystem. With the help of leadership, I gathered insights into a running note.\n\nI also researched how the current onboarding process worked and the steps a user had to take to successfully onboard their application. I documented design flaws, unclear instructions, and ghost content.\n\n## Exploration\nAfter taking inventory, I created a Mural board to outline the content topics, and how they fit into the grand scheme of the onboarding process.\n\nI then started to explore what a new content architecture could look like. I brainstormed different ways of organizing the information, organized by logical flow, importance, and necessity. Throughout this process, I provided feedback to leadership about the state of the content, what didn't make sense, what was duplicated, and what was conflicting. Through each iteration, the site organization became more focused.\n\n## Philosophy\nAs stated above, I was given freedom on how to best improve the onboarding content. Having a background in technical writing, I set out to craft instructions with these principles in mind:\n\n- Writing should clearly state its purpose and function.\n- Language should be written plainly, not relying on user assumption.\n- Content complexity should match the audience's understanding.\n- Jargon must be avoided and technical terms should be defined.\n- Visual and textual context should always be given.\n- Content must be accessible to people of all abilities.\n\n## Draft\nI designed the content architecture according to common UX laws and wrote copy in plain language, defining technical terms when needed. When creative copy was needed, I was given the freedom to craft the wording. I created new content to fill any instructional gaps I identified.\n\nAs far as the instructional copy that already existed, it needed to be updated. It contained broken links, unclear steps, and vague explanations and outcomes. I corrected all outdated links, re-wrote steps, and chunked instructions by logic (Miller's Law) to increase processing ability and reduce choice fatigue (Hick's Law).\n\nInformational sections of copy were designed with the Aesthetic-Usability effect and Jakob's Law in mind. I organized information according to how other internal sites and resources were already designed.\n\nMy explorations and final site edits can be seen below. Due to it being internal, sensitive information is blurred.",
             "images": [
               "images/ai-enablement/picture_1.webp",
@@ -33,11 +37,15 @@
         {
           "type": "file",
           "id": "device-migration",
-          "label": "Device Migration Readiness",
+          "label": "Device migration readiness",
           "content": {
-            "title": "Device Migration Readiness",
+            "title": "Device migration readiness",
             "subtitle": "Conversational AI experience for device migration",
-            "tags": ["Conversational AI", "UX Writing", "Internal"],
+            "tags": [
+              "Conversational AI",
+              "UX Writing",
+              "Internal"
+            ],
             "body": "Keeping more than 250,000 IBMers productive means treating every laptop as a mission-critical asset. When hardware fails—or simply reaches end-of-life—employees can't afford hours of downtime. As a Conversation Designer on IBM's IT Support Content Team, I created the end-to-end conversation flow for a new Device Migration experience that walks employees through the migration process.\n\n## Overview\nThrough analyzing user feedback, my team and I identified that there was a need for a chatbot flow within our AI assistant that helped users with device migrations.\n\nFrom historical search data and user feedback, we developed a comprehensive device migration conversation workflow that helps users migrate their data and settings to a new device, quickly and effortlessly.\n\n## Stakeholders\nThe stakeholders for this project were as follows:\n\n- IBMers\n- Executive leaders\n\n> **The challenge:** How can I reduce friction in the device migration process when an IBMer needs to move to a different computer?\n\n## Research\nMy first task was to make a comprehensive list of all topics IBMers were searching for when switching to a new computer. I documented the following:\n\n- Data storage options per platform\n- Internet settings and bookmarks migration\n- Passwords and their accompanying wallet apps\n\nNext, I created a flowchart of the conversation.\n\nLastly, I built out the flow within watsonx Orchestrate.\n\n## Draft\nThe device migration flow was written with clarity, empathy, and user trust at its core. I followed IBM Style principles to ensure every message was concise, action-oriented, and human.\n\nEach step in the flow used plain language, avoided jargon, and clearly guided users through technical processes without overwhelming them.\n\nTo align with IBM's voice, I did the following:\n\n- Used second person (\"you\") to speak directly to the user\n- Prioritized active voice and short sentences for quick comprehension\n- Applied progressive disclosure to keep screens uncluttered\n\nThe result was a flow that felt confident but approachable, and consistent with IBM's global standard for inclusive, user-first communication.\n\n## Quantitative wins\nThese are the metrics that were measured before and after the conversational flow was implemented:\n\n- Follow-up tickets per migration: 0.08, down from 1.2\n- CSAT score for device replacement: 4.7/5, up from 3.4/5\n\n## Qualitative wins\nI observed the following qualitative wins from user feedback:\n\n- Clear, conversational prompts reduced cognitive load and anxiety during a stressful hardware failure.\n- Progressive disclosure kept power users moving fast while offering more information for novices.",
             "images": [
               "images/device-migration/flow_1.png",
@@ -55,8 +63,13 @@
           "label": "watsonx Orchestrate, Think",
           "content": {
             "title": "watsonx Orchestrate, Think",
-            "subtitle": "Video scripts for IBM's annual THINK conference",
-            "tags": ["Copywriting", "AI", "Customer-facing", "Video"],
+            "subtitle": "Video script for IBM's annual THINK conference",
+            "tags": [
+              "Copywriting",
+              "AI",
+              "Customer-facing",
+              "Video"
+            ],
             "body": "I served as a copywriter for this project where I had the opportunity to write video scripts about watsonx Orchestrate. These video scripts were read and recorded by a voice actor, then implemented in a series of videos. These videos were then presented at IBM's annual THINK conference. Below is the case study behind the THINK 2024 video.\n\nI was recommended by my manager to help in an effort to get marketing materials prepared for THINK. The THINK team needed a copywriter to help write a script about watsonx Orchestrate and specific use cases of the agentic AI solution.\n\n## Overview\nIBM Think is an annual business conference that brings together senior business and technology leaders to discuss emerging technologies and industry trends. The conference typically focuses on AI, cloud computing, and other technologies that IBM is investing in. IBM products are unveiled, explained, then demoed.\n\n## Stakeholders\nThe stakeholders for this project were as follows:\n\n- Business leaders\n- Technology leaders\n- Potential companies, from startup to enterprise level\n\n> **The challenge:** How can we communicate the value of watsonx Orchestrate to potential customers?\n\nOur goal was to communicate how watsonx Orchestrate could transform a business and detail a specific use case where that value was shown.\n\n## Research\nMy first task was to learn everything I could about watsonx Orchestrate:\n\n- I read countless product pages, soaking up all the marketing information and language about the product.\n- I read its product documentation and learned about the different functions of the product.\n- I had numerous conversations with the Product Owner about the technology, how to use it, and how to get value from it.\n\n## Philosophy\nI decided to approach the script with technical writing principles, mixed with some aesthetic language to create a feeling in the listener/observer:\n\n- Language is written plainly, not relying on user assumptions.\n- Jargon and technical terms are avoided when possible.\n- Content must be accessible to persons of all abilities.\n- Language should show the product's value.\n- Language should create a sense of discovery, wonder, and success.\n- Language should include a call to action.\n\n## Draft\nIt was decided by our team that the focus of the first video would be about productivity. The team wanted to focus on how business leaders could enable their employees to work more efficiently with watsonx Orchestrate. Thus, the first paragraph of the script was born. I chose to emphasize the greater marketplace and competition to communicate that watsonx Orchestrate is the product that will give a company the competitive edge.\n\nNext, I introduced watsonx Orchestrate's value addition by first explaining what the same process is like today without the help of watsonx. This content structure is ideal as it outlines the problem and gives the user a solution, without the user having to generate a solution themselves.\n\nI then went on to explain how watsonx Orchestrate works at a technical level, making sure to include each process and emphasizing their complexity. I closed this paragraph with the value proposition, then explained more features that are important to the business leader.\n\nLastly, I concluded with a simple yet elegant line, pitching watsonx Orchestrate as the game changer, placing agency in the business leader's hands.\n\n## Engagement\nThis video was presented to over 5,000 attendees. watsonx Orchestrate continues to be one of IBM's most pivotal products.",
             "script": "In a competitive business environment, productivity can be crucial to winning in the marketplace. Procurement professionals are looking for ways to equip employees with the tools and resources they need, swiftly and effortlessly. Using open APIs to integrate with business-critical applications, watsonx Orchestrate can connect to your procurement applications, transform your technology stack, and help you streamline once tedious tasks.\n\nProcesses like purchase request fulfillment can take a substantial amount of time and are prone to categorization errors, potentially resulting in compliance concerns and incorrect accounting information.\n\nNow, with watsonx Orchestrate, you can use natural language to automate your process. Prompt watsonx to generate a purchase request for a product or service, and watch Orchestrate simultaneously verify budget requirements, confirm catalog availability, and create a complete purchase request. If no catalog item exists, watsonx Orchestrate can create a sourcing request and continue to generate the purchase request form with essential details, ultimately giving you more time to focus on mission-critical work.\n\nAfter you review and submit the request, watsonx Orchestrate directs your procurement system to send the purchase request to the proper team for approval. Once approved, watsonx Orchestrate keeps you informed of its status, which can help reduce your workload and cycle time.\n\nUsher in a new era of productivity through the power of AI with watsonx Orchestrate.",
             "images": []
@@ -65,11 +78,15 @@
         {
           "type": "file",
           "id": "windows-setup",
-          "label": "Set Up Your Windows PC",
+          "label": "Set up your Windows PC",
           "content": {
-            "title": "Set Up Your Windows PC",
+            "title": "Set up your Windows PC",
             "subtitle": "Windows setup guide for new and existing IBMers",
-            "tags": ["Technical Writing", "Internal", "Tooling"],
+            "tags": [
+              "Technical Writing",
+              "Internal",
+              "Tooling"
+            ],
             "body": "I served as a Technical Writer during this project, where I built and wrote an in-depth Windows setup guide for new and existing IBMers to enable them to start working or get back to work on their device.\n\nI created a Windows guide, tailored to IBM's setup process, with the goal of getting new IBMers online and working on their first day of employment, quickly and effortlessly. The guide was also created to help IBMers transitioning to new devices and IBMers who recently completed a computer reset due to technical issues. The draft and final product were created in Microsoft PowerPoint. The content in the guide was informed by the Windows platform team, user feedback, and CIO Design. I worked cross-functionally with these teams to publish this guide.",
             "images": [
               "images/ai-enablement/windows/win_1.webp",
@@ -118,7 +135,7 @@
     {
       "type": "folder",
       "id": "ai-systems",
-      "label": "AI Systems",
+      "label": "AI systems",
       "children": [
         {
           "type": "folder",
@@ -132,7 +149,12 @@
               "content": {
                 "title": "ibm-style-editor",
                 "subtitle": "Automated IBM Style editorial pipeline for .docx and .pdf",
-                "tags": ["Skill", "IBM Style", "Automation", "Editorial"],
+                "tags": [
+                  "Skill",
+                  "IBM Style",
+                  "Automation",
+                  "Editorial"
+                ],
                 "body": "I built ibm-style-editor as an AI skill for Bob, IBM's internal AI assistant, to automate the editorial review process for IBM Style compliance. Drop in a `.docx` or `.pdf`, and the skill runs a full multi-stage pipeline that catches everything from passive voice and undefined acronyms to broken UI instructions, then delivers a single annotated `_MasterReview` file ready to work from. What used to take hours of manual line editing now takes minutes, with consistent, repeatable results every time.\n\n## How it works\nThe pipeline runs in two paths: one for `.docx`, one for `.pdf`. Both handle everything automatically from start to finish.",
                 "images": [
                   "images/skills/ibm-style-editor-flow.svg"
@@ -146,7 +168,12 @@
               "content": {
                 "title": "ibm-style-coach",
                 "subtitle": "Writing coach for IBM Style compliance",
-                "tags": ["Skill", "IBM Style", "Coaching", "Writing"],
+                "tags": [
+                  "Skill",
+                  "IBM Style",
+                  "Coaching",
+                  "Writing"
+                ],
                 "body": "I built ibm-style-coach as an AI skill for Bob, IBM's internal AI assistant, to help writers improve their IBM Style compliance without just handing them the answers. The skill works across three modes: DOCX, PDF, and inline text pasted straight into chat. For every violation it finds, the coach explains *why* the rule exists, tells you what to watch for next time, and offers a suggested rewrite on the first occurrence only, so you learn the pattern and not just accept a fix. It's designed around the idea that good feedback builds capability over time, not dependency.\n\n## How it works\nThe same analysis passes run in all three modes. The only difference is how you give it input and how it gives you the output.",
                 "images": [
                   "images/skills/ibm-style-coach-flow.svg"
