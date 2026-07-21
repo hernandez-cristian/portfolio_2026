@@ -1213,12 +1213,17 @@ function openFile(id) {
   }
 
   // Images — carousel if > 1, single image if 1, hidden if none
+  // SVGs get full-width treatment (no fixed aspect-ratio box)
   const imagesEl = document.getElementById('project-images');
   const imgs = c.images || [];
   if (imgs.length === 0) {
     imagesEl.innerHTML = '';
   } else if (imgs.length === 1) {
-    imagesEl.innerHTML = `<img src="${imgs[0]}" alt="" loading="lazy" style="max-width:100%;border-radius:8px;border:1px solid var(--border);" />`;
+    if (imgs[0].endsWith('.svg')) {
+      imagesEl.innerHTML = `<div style="overflow-x:auto;width:100%;"><img src="${imgs[0]}" alt="" loading="lazy" style="min-width:600px;width:100%;display:block;border-radius:8px;" /></div>`;
+    } else {
+      imagesEl.innerHTML = `<img src="${imgs[0]}" alt="" loading="lazy" style="max-width:100%;border-radius:8px;border:1px solid var(--border);" />`;
+    }
   } else {
     renderCarousel(imagesEl, imgs);
   }
