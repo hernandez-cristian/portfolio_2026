@@ -12,6 +12,21 @@
       "children": [
         {
           "type": "file",
+          "id": "maplestory-api-docs",
+          "label": "MapleStory API docs",
+          "content": {
+            "title": "MapleStory API docs",
+            "subtitle": "Unofficial developer reference for the maplestory.io API",
+            "tags": [
+              "Technical Writing",
+              "API Documentation",
+              "REST"
+            ],
+            "body": "## Overview\n\nmaplestory.io is a community-built REST API that provides detailed information about the following MapleStory assets:\n\n- Items\n- Monsters\n- Quests\n- NPCs\n- Characters\n- Maps\n\nThe information is sourced directly from the WZ files (MapleStory's proprietary game data format) that download alongside the MapleStory client.\n\n## Use cases\n\nYou can use this API in many different ways:\n\n- Create a monster training guide that includes monster details like HP and EXP rate for your in-game character.\n- Build an item lookup tool to learn where to find a specific item in the game.\n- Create a monster simulator that shows any monster's animation set.\n\n## Prerequisites\n\nYou don't need to authenticate or have an API key to start using this API. You just need a tool to make read-only HTTP GET requests, such as a browser, a terminal, or Postman.\n\n## Getting started\n\n### Base URL\n\nAll GET requests use this base URL:\n\n```\nhttps://maplestory.io/api/{region}/{version}\n```\n\nThe `{region}` placeholder refers to the geographic variant of MapleStory. For example, Global MapleStory uses `GMS`. The `{version}` placeholder refers to that variant's version number. The examples in this guide use `208.2.0`, which is the current version of GMS at the time of writing.\n\n### Your first request\n\nTry the API call below:\n\n1. Open a browser.\n2. Go to the following URL. This is an HTTP GET request.\n3. Review the JSON response you receive from the API.\n\n```\nhttps://maplestory.io/api/GMS/208.2.0/mob/100100\n```\n\nA successful response returns JSON and includes the following fields: `id`, `name`, `meta`, `description`, `framebooks`, and `foundAt`.\n\n### Response codes\n\n| Status code | Meaning |\n|---|---|\n| `200` with data | Request succeeded |\n| `200` with `null` | The ID doesn't exist in the specified region or version |\n| `404` | Endpoint not found — check your URL structure |\n| `500` | Server error — try again later |\n\n### URL structure\n\nAll calls to the maplestory.io API follow this structure:\n\n```\nhttps://maplestory.io/api/{region}/{version}/{resource}/{id}\n```\n\nThe `{region}` and `{version}` placeholders refer to the region variant and version number of the game. The `{resource}` placeholder refers to the type of resource you're accessing, such as `mob` or `item`. The `{id}` placeholder refers to the ID number of that specific resource.\n\nFor example, to retrieve the Snail mob in GMS 208.2.0:\n\n```\nhttps://maplestory.io/api/GMS/208.2.0/mob/100100\n```"
+          }
+        },
+        {
+          "type": "file",
           "id": "ai-enablement",
           "label": "AI enablement",
           "content": {

@@ -607,6 +607,82 @@
       color: var(--text-dim);
     }
 
+    /* ── Code block ── */
+    .project-body pre {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text);
+      overflow-x: auto;
+      margin-bottom: 16px;
+      white-space: pre;
+    }
+
+    .project-body code {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1px 5px;
+      color: var(--accent);
+    }
+
+    .project-body pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    /* ── Ordered list ── */
+    .project-body ol {
+      margin: 0 0 16px 0;
+      padding-left: 20px;
+      list-style: decimal;
+    }
+
+    .project-body ol li {
+      margin-bottom: 8px;
+      color: var(--text-muted);
+      padding-left: 4px;
+    }
+
+    /* ── Table ── */
+    .project-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 13.5px;
+    }
+
+    .project-body th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      padding: 6px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-body td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+      vertical-align: top;
+    }
+
+    .project-body tr:last-child td {
+      border-bottom: none;
+    }
+
     /* legacy static images fallback */
     .project-images {
       margin-top: 40px;
@@ -1008,10 +1084,11 @@ function renderMarkdown(md) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 
-  // Inline formatting: bold, italic
+  // Inline formatting: bold, italic, inline code
   const inline = s => s
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>');
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>');
 
   const lines = md.split('\n');
   const output = [];
@@ -1032,6 +1109,19 @@ function renderMarkdown(md) {
       i++; continue;
     }
 
+    // Fenced code block (```)
+    if (/^```/.test(line)) {
+      i++; // skip opening fence
+      const codeLines = [];
+      while (i < lines.length && !/^```/.test(lines[i])) {
+        codeLines.push(escape(lines[i]));
+        i++;
+      }
+      i++; // skip closing fence
+      output.push(`<pre><code>${codeLines.join('\n')}</code></pre>`);
+      continue;
+    }
+
     // Blockquote — collect consecutive > lines
     if (/^> /.test(line)) {
       const bqLines = [];
@@ -1045,6 +1135,37 @@ function renderMarkdown(md) {
 
     // Blank line — skip
     if (line.trim() === '') { i++; continue; }
+
+    // Table — detect by | characters
+    if (/^\|/.test(line)) {
+      const tableLines = [];
+      while (i < lines.length && /^\|/.test(lines[i])) {
+        tableLines.push(lines[i]);
+        i++;
+      }
+      // filter out separator rows (---|---)
+      const rows = tableLines.filter(l => !/^\|[-| :]+\|$/.test(l));
+      if (rows.length > 0) {
+        const parseRow = l => l.split('|').slice(1, -1).map(c => inline(escape(c.trim())));
+        const [headerRow, ...bodyRows] = rows;
+        const headers = parseRow(headerRow);
+        const thead = `<thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>`;
+        const tbody = bodyRows.map(r => `<tr>${parseRow(r).map(c => `<td>${c}</td>`).join('')}</tr>`).join('');
+        output.push(`<table>${thead}<tbody>${tbody}</tbody></table>`);
+      }
+      continue;
+    }
+
+    // Ordered list
+    if (/^\d+\. /.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\d+\. /.test(lines[i])) {
+        items.push(`<li>${inline(escape(lines[i].replace(/^\d+\. /, '')))}</li>`);
+        i++;
+      }
+      output.push(`<ol>${items.join('')}</ol>`);
+      continue;
+    }
 
     // Unordered list — handles * and - , with one level of indented nesting (4-space or tab)
     if (/^[*-] /.test(line)) {
