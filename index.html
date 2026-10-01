@@ -334,7 +334,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: flex-start;
-      height: 100%;
+      min-height: 100%;
       max-width: 560px;
     }
 
@@ -375,6 +375,74 @@
       width: 16px;
       height: 16px;
       color: var(--text-dim);
+    }
+
+    /* ── Featured work (welcome state) ── */
+    #featured {
+      width: 100%;
+      margin-top: 40px;
+    }
+
+    #featured:empty { display: none; }
+
+    #featured .welcome-label { margin-bottom: 12px; }
+
+    .featured-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .featured-card {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      color: inherit;
+    }
+
+    .featured-card:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-subtle);
+    }
+
+    .featured-card:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .featured-path {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .featured-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
+    }
+
+    .featured-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 2px;
+    }
+
+    .featured-impact {
+      margin-top: 10px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: var(--accent);
     }
 
     /* ── Project page ── */
@@ -911,11 +979,12 @@
       <div class="welcome-label">Portfolio</div>
       <h1 id="welcome-name">—</h1>
       <p id="welcome-tagline">—</p>
+      <div id="featured"></div>
       <div class="hint">
         <svg class="hint-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
-        Select a file to view a project
+        Or select a file to browse all projects
       </div>
     </div>
 
@@ -975,14 +1044,70 @@ const ICONS = {
 };
 
 // ─── Flatten tree for search ──────────────────────────────────────────────────
-function flattenTree(nodes, breadcrumb = []) {
+function flattenTree(nodes, breadcrumb = [], folderIds = []) {
   nodes.forEach(node => {
     if (node.type === 'file') {
-      allFiles.push({ ...node, breadcrumb: [...breadcrumb] });
+      allFiles.push({ ...node, breadcrumb: [...breadcrumb], folderIds: [...folderIds] });
     } else if (node.type === 'folder' && node.children) {
-      flattenTree(node.children, [...breadcrumb, node.label]);
+      flattenTree(node.children, [...breadcrumb, node.label], [...folderIds, node.id]);
     }
   });
+}
+
+// ─── Featured work (welcome state) ───────────────────────────────────────────
+function renderFeatured(featured) {
+  const container = document.getElementById('featured');
+  const items = (featured || [])
+    .map(f => ({ ...f, file: allFiles.find(file => file.id === f.id) }))
+    .filter(f => f.file);
+  if (items.length === 0) return;
+
+  const label = document.createElement('div');
+  label.className = 'welcome-label';
+  label.textContent = 'Featured work';
+
+  const list = document.createElement('div');
+  list.className = 'featured-list';
+
+  items.forEach(({ file, impact }) => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'featured-card';
+
+    const path = document.createElement('div');
+    path.className = 'featured-path';
+    path.textContent = file.breadcrumb.join(' / ');
+
+    const title = document.createElement('div');
+    title.className = 'featured-title';
+    title.textContent = file.content.title;
+
+    const subtitle = document.createElement('div');
+    subtitle.className = 'featured-subtitle';
+    subtitle.textContent = file.content.subtitle;
+
+    card.append(path, title, subtitle);
+
+    if (impact) {
+      const impactEl = document.createElement('div');
+      impactEl.className = 'featured-impact';
+      impactEl.textContent = impact;
+      card.appendChild(impactEl);
+    }
+
+    card.addEventListener('click', () => {
+      const hidden = file.folderIds.some(id => !openFolders.has(id));
+      if (hidden && !document.getElementById('search-input').value.trim()) {
+        file.folderIds.forEach(id => openFolders.add(id));
+        rebuildTree(spec.tree);
+      }
+      openFile(file.id);
+    });
+
+    list.appendChild(card);
+  });
+
+  container.append(label, list);
 }
 
 // ─── Render tree ─────────────────────────────────────────────────────────────
@@ -1617,6 +1742,7 @@ async function init() {
 
   // Render
   rebuildTree(spec.tree);
+  renderFeatured(spec.meta.featured);
   initResize();
   initMobile();
 

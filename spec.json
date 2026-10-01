@@ -2,7 +2,12 @@
   "meta": {
     "name": "Cristian Hernandez",
     "title": "Technical Content Engineer",
-    "tagline": "Designing clarity at the intersection of language and technology."
+    "tagline": "Designing clarity at the intersection of language and technology.",
+    "featured": [
+      { "id": "ai-enablement", "impact": "300+ applications onboarded to watsonx" },
+      { "id": "device-migration", "impact": "CSAT 3.4 → 4.7 · follow-up tickets 1.2 → 0.08" },
+      { "id": "skill-ibm-style-editor", "impact": "Hours of style review → minutes" }
+    ]
   },
   "tree": [
     {
