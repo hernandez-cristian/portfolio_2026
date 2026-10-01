@@ -1259,6 +1259,14 @@ function renderMarkdown(md) {
       continue;
     }
 
+    // Image on its own line: ![alt](path =width)
+    const imgMatch = line.match(/^!\[([^\]]*)\]\(([^)\s]+)(?: =(\d+))?\)$/);
+    if (imgMatch) {
+      const [, alt, src, width] = imgMatch;
+      output.push(`<img src="${escape(src)}" alt="${escape(alt)}" style="${width ? `width:${width}px;` : ''}max-width:100%;display:block;margin-bottom:24px;" />`);
+      i++; continue;
+    }
+
     // Blank line — skip
     if (line.trim() === '') { i++; continue; }
 
