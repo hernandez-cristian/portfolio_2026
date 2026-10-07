@@ -22,6 +22,9 @@
       --tag-text: #8b949e;
       --folder-color: #c9a22e;
       --skill-color: #58a6ff;
+      --series-0: #58a6ff;
+      --series-1: #484f58;
+      --series-2: #d29922;
       --sidebar-width: 280px;
       --font-mono: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
       --font-sans: -apple-system, "Segoe UI", system-ui, sans-serif;
@@ -43,6 +46,9 @@
       --tag-text: #3c3c3e;
       --folder-color: #007aff;
       --skill-color: #007aff;
+      --series-0: #007aff;
+      --series-1: #b4b4b9;
+      --series-2: #d97c14;
     }
 
     html, body {
@@ -532,6 +538,7 @@
 
     .project-body strong { color: var(--text); font-weight: 600; }
     .project-body em { font-style: italic; }
+    .project-body a { color: var(--accent); text-underline-offset: 2px; }
 
     /* ── Callout block (> blockquote) ── */
     .project-body blockquote {
@@ -751,6 +758,214 @@
       border-bottom: none;
     }
 
+    /* Wrapped code block (```wrap) for long prose like prompts */
+    .project-body pre.pre-wrap {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* ── Rich blocks (```stats, ```bars, ```compare in markdown) ── */
+    .rb-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+      margin: 4px 0 24px;
+    }
+
+    .rb-stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .rb-label-mono {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+    }
+
+    .rb-stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.25;
+      margin: 6px 0 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .rb-stat-note {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .rb-bars {
+      margin: 4px 0 24px;
+      padding: 14px 16px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .rb-caption {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+
+    .rb-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 16px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .rb-legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+    .rb-key {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .rb-key.s0, .rb-seg.s0 { background: var(--series-0); }
+    .rb-key.s1, .rb-seg.s1 { background: var(--series-1); }
+    .rb-key.s2, .rb-seg.s2 { background: var(--series-2); }
+
+    .rb-row {
+      display: grid;
+      grid-template-columns: minmax(0, 10.5rem) minmax(60px, 1fr) max-content 2.25rem;
+      gap: 10px;
+      align-items: center;
+      padding: 4px 0;
+      font-size: 12.5px;
+      line-height: 1.4;
+      color: var(--text-muted);
+    }
+
+    .rb-row.no-net { grid-template-columns: minmax(0, 10.5rem) minmax(60px, 1fr) max-content; }
+
+    .rb-row.rb-head {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding-bottom: 2px;
+    }
+
+    .rb-name em {
+      font-style: normal;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .rb-bar { display: flex; gap: 2px; height: 12px; }
+    .rb-seg { border-radius: 2px; min-width: 2px; }
+    .rb-seg:hover { filter: brightness(1.15); }
+
+    .rb-num {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .rb-net { color: var(--text); }
+
+    .rb-large .rb-bar { height: 28px; }
+
+    .rb-large-labels {
+      display: flex;
+      gap: 2px;
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--text-muted);
+    }
+
+    .rb-large-labels div { min-width: 0; }
+
+    .rb-large-labels b {
+      display: block;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .rb-compare {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 4px 0 24px;
+    }
+
+    .rb-compare-head {
+      background: var(--surface);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .rb-prompt {
+      margin-top: 4px;
+      font-size: 14px;
+      font-style: italic;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .rb-answers { display: grid; grid-template-columns: 1fr 1fr; }
+
+    .rb-answer {
+      padding: 12px 16px;
+      min-width: 0;
+      font-size: 13.5px;
+      line-height: 1.7;
+    }
+
+    .rb-answer + .rb-answer { border-left: 1px solid var(--border); }
+
+    .rb-who {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .rb-who strong { color: var(--text); font-weight: 600; }
+
+    .rb-pick {
+      font-size: 10.5px;
+      font-family: var(--font-mono);
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 1px 8px;
+    }
+
+    .rb-compare-note {
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: var(--text-dim);
+    }
+
     /* legacy static images fallback */
     .project-images {
       margin-top: 40px;
@@ -897,6 +1112,13 @@
 
       /* Hint arrow points up on mobile (sidebar is above) */
       .hint-arrow { transform: rotate(90deg); }
+
+      /* Rich blocks stack on narrow screens */
+      .rb-row, .rb-row.no-net { grid-template-columns: minmax(0, 1fr) auto auto; row-gap: 4px; }
+      .rb-row .rb-name { grid-column: 1 / -1; }
+      .rb-row.rb-head { display: none; }
+      .rb-answers { grid-template-columns: 1fr; }
+      .rb-answer + .rb-answer { border-left: 0; border-top: 1px solid var(--border); }
     }
 
     /* ── No results ── */
@@ -1235,16 +1457,21 @@ function renderMarkdown(md) {
       i++; continue;
     }
 
-    // Fenced code block (```)
+    // Fenced block (```lang). ```stats, ```bars and ```compare hold JSON and render
+    // as rich blocks; ```wrap is a code block that wraps long lines; anything else is code.
     if (/^```/.test(line)) {
+      const lang = line.slice(3).trim();
       i++; // skip opening fence
-      const codeLines = [];
+      const rawLines = [];
       while (i < lines.length && !/^```/.test(lines[i])) {
-        codeLines.push(escape(lines[i]));
+        rawLines.push(lines[i]);
         i++;
       }
       i++; // skip closing fence
-      output.push(`<pre><code>${codeLines.join('\n')}</code></pre>`);
+      const block = renderRichBlock(lang, rawLines.join('\n'), s => inline(escape(String(s ?? ''))));
+      if (block) { output.push(block); continue; }
+      const cls = lang === 'wrap' ? ' class="pre-wrap"' : '';
+      output.push(`<pre${cls}><code>${rawLines.map(escape).join('\n')}</code></pre>`);
       continue;
     }
 
@@ -1350,6 +1577,95 @@ function renderMarkdown(md) {
   }
 
   return output.join('\n');
+}
+
+
+// ─── Rich blocks ─────────────────────────────────────────────────────────────
+// Fenced JSON blocks in a page body:
+//   ```stats    [{ "label", "value", "note" }, ...]
+//   ```bars     { "series": [3 names], "rows": [{ "label", "n", "values": [3 counts] }],
+//                 "caption", "label_header", "counts_header", "net": true, "size": "large" }
+//   ```compare  { "label", "prompt", "answers": [{ "who", "series", "text", "pick" }], "note" }
+// `fmt` escapes text and applies inline markdown. Returns null for unknown or invalid blocks.
+function renderRichBlock(kind, json, fmt) {
+  if (!['stats', 'bars', 'compare'].includes(kind)) return null;
+  let data;
+  try { data = JSON.parse(json); } catch (e) {
+    console.warn(`Invalid ${kind} block:`, e);
+    return null;
+  }
+  const attr = s => String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const pct = (v, n) => Math.round(100 * v / n);
+
+  if (kind === 'stats') {
+    return `<div class="rb-stats">${data.map(t => `
+      <div class="rb-stat">
+        <div class="rb-label-mono">${fmt(t.label)}</div>
+        <div class="rb-stat-value">${fmt(t.value)}</div>
+        <div class="rb-stat-note">${fmt(t.note)}</div>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  if (kind === 'bars') {
+    const series = data.series || [];
+    const segs = row => row.values.map((v, k) => v
+      ? `<span class="rb-seg s${k}" style="flex:${v}" title="${attr(`${row.label}: ${series[k]} ${v} of ${row.n} (${pct(v, row.n)}%)`)}"></span>`
+      : '').join('');
+    const describe = row => `${row.label}, ${row.n} prompts: ` +
+      row.values.map((v, k) => `${series[k]} ${v}`).join(', ');
+    const caption = data.caption ? `<div class="rb-caption">${fmt(data.caption)}</div>` : '';
+
+    if (data.size === 'large') {
+      const row = data.rows[0];
+      const labels = row.values.map((v, k) =>
+        `<div style="flex:${v}"><b>${v}</b>${fmt(series[k])} (${pct(v, row.n)}%)</div>`).join('');
+      return `<figure class="rb-bars rb-large" role="img" aria-label="${attr(describe(row))}">
+        ${caption}
+        <div class="rb-bar">${segs(row)}</div>
+        <div class="rb-large-labels" aria-hidden="true">${labels}</div>
+      </figure>`;
+    }
+
+    const rowCls = data.net ? 'rb-row' : 'rb-row no-net';
+    const legend = `<div class="rb-legend">${series.map((s, k) =>
+      `<span><i class="rb-key s${k}"></i>${fmt(s)}</span>`).join('')}</div>`;
+    const head = `<div class="${rowCls} rb-head" aria-hidden="true">
+        <span>${fmt(data.label_header)}</span><span></span>
+        <span class="rb-num">${fmt(data.counts_header)}</span>
+        ${data.net ? '<span class="rb-num">Net</span>' : ''}
+      </div>`;
+    const rows = data.rows.map(row => {
+      const net = row.values[row.values.length - 1] - row.values[0];
+      return `<div class="${rowCls}" role="img" aria-label="${attr(describe(row))}">
+        <span class="rb-name">${fmt(row.label)} <em>${row.n}</em></span>
+        <span class="rb-bar">${segs(row)}</span>
+        <span class="rb-num">${row.values.join(' / ')}</span>
+        ${data.net ? `<span class="rb-num rb-net">${net > 0 ? '+' : ''}${net}</span>` : ''}
+      </div>`;
+    }).join('');
+    return `<figure class="rb-bars">${caption}${legend}${head}${rows}</figure>`;
+  }
+
+  // compare
+  const answers = (data.answers || []).map(a => `
+    <div class="rb-answer">
+      <div class="rb-who">
+        <i class="rb-key s${a.series ?? 1}"></i><strong>${fmt(a.who)}</strong>
+        ${a.pick ? `<span class="rb-pick">${fmt(a.pick)}</span>` : ''}
+      </div>
+      <div>${fmt(a.text)}</div>
+    </div>`).join('');
+  return `<div class="rb-compare">
+    <div class="rb-compare-head">
+      <div class="rb-label-mono">${fmt(data.label)}</div>
+      <div class="rb-prompt">${fmt(data.prompt)}</div>
+    </div>
+    <div class="rb-answers">${answers}</div>
+    ${data.note ? `<div class="rb-compare-note">${fmt(data.note)}</div>` : ''}
+  </div>`;
 }
 
 

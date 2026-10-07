@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model Eval Runner</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --text: #1c2330;
+    --muted: #5d6878;
+    --border: #dce1e7;
+    --accent: #2b65d9;
+    --accent-text: #ffffff;
+    --ok: #1d7f47;
+    --ok-bg: #e5f4ea;
+    --warn: #9a5b00;
+    --warn-bg: #fdf1dc;
+    --err: #b42828;
+    --err-bg: #fbe7e7;
+    --chip: #eef1f5;
+    --code: #f2f4f7;
+    --run: #2b65d9;
+    --run-bg: #e6eefc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #13161b;
+      --panel: #1b1f26;
+      --text: #e5e8ed;
+      --muted: #98a2b0;
+      --border: #2d333c;
+      --accent: #5d8ff2;
+      --accent-text: #0c1018;
+      --ok: #5cc98a;
+      --ok-bg: #18301f;
+      --warn: #e7ae4c;
+      --warn-bg: #352812;
+      --err: #f07a7a;
+      --err-bg: #3a1c1c;
+      --chip: #252a32;
+      --code: #222730;
+      --run: #7ea6f5;
+      --run-bg: #1c2840;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header {
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    padding: 16px 20px 0;
+  }
+  h1 { font-size: 18px; margin: 0; }
+  header .sub { color: var(--muted); font-size: 13px; }
+  .layout {
+    display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 16px;
+    padding: 16px 20px 32px; align-items: start;
+  }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; padding: 12px 16px 24px; } }
+  .panel {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+    min-width: 0;
+  }
+  .panel h2 { font-size: 15px; margin: 0 0 12px; }
+  label { display: block; font-weight: 600; font-size: 13px; margin: 12px 0 4px; }
+  .hint { color: var(--muted); font-size: 12px; margin-top: 3px; }
+  input[type=text], input[type=password], input[type=number], select, textarea {
+    width: 100%; padding: 7px 9px; font: inherit; color: var(--text);
+    background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+  }
+  textarea { resize: vertical; min-height: 64px; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  button {
+    font: inherit; font-weight: 600; padding: 7px 14px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--chip); color: var(--text);
+  }
+  button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  button.danger { color: var(--err); }
+  button:disabled { opacity: .45; cursor: default; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+  .notice { margin-top: 10px; padding: 8px 10px; border-radius: 6px; font-size: 13px; white-space: pre-wrap; }
+  .notice.err { background: var(--err-bg); color: var(--err); }
+  .notice.ok { background: var(--ok-bg); color: var(--ok); }
+  .notice.info { background: var(--chip); color: var(--text); }
+  .notice:empty { display: none; }
+
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin: -4px 0 14px; }
+  .tabs button {
+    background: none; border: none; border-bottom: 2px solid transparent; border-radius: 0;
+    padding: 6px 12px 8px; color: var(--muted);
+  }
+  .tabs button.active { color: var(--text); border-bottom-color: var(--accent); }
+
+  .files { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; }
+  .files label { margin-top: 0; }
+  @media (max-width: 600px) { .files { grid-template-columns: 1fr; } }
+  .summary { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; font-size: 13px; color: var(--muted); }
+  .summary b { color: var(--text); }
+  .progress { height: 6px; background: var(--chip); border-radius: 3px; margin-top: 8px; overflow: hidden; }
+  .progress div { height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0 8px; }
+  .filters button { font-weight: 500; padding: 3px 10px; border-radius: 999px; font-size: 12px; }
+  .filters button.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 600; color: var(--muted); padding: 7px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr.item { cursor: pointer; }
+  tr.item:hover td { background: var(--chip); }
+  tr.item.open td { background: var(--chip); }
+  td.id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
+  td.cat { color: var(--muted); white-space: nowrap; }
+  td.prompt { max-width: 0; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  td.status { white-space: nowrap; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .badge.pending { background: var(--chip); color: var(--muted); }
+  .badge.queued { background: var(--chip); color: var(--text); }
+  .badge.running { background: var(--run-bg); color: var(--run); }
+  .badge.done { background: var(--ok-bg); color: var(--ok); }
+  .badge.error { background: var(--err-bg); color: var(--err); }
+  .badge.flag { background: var(--warn-bg); color: var(--warn); margin-left: 4px; }
+  tr.detail td { background: var(--panel); padding: 14px 16px 18px; }
+  .detail h4 { margin: 14px 0 6px; font-size: 13px; }
+  .detail h4:first-child { margin-top: 0; }
+  pre {
+    margin: 0; padding: 10px 12px; background: var(--code); border-radius: 6px;
+    white-space: pre-wrap; word-break: break-word; font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    max-height: 420px; overflow: auto;
+  }
+  .meta { color: var(--muted); font-size: 12px; margin-top: 6px; }
+  details.reasoning { margin-top: 8px; }
+  details.reasoning summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+  details.reasoning pre { margin-top: 6px; }
+  .msg details.reasoning pre { background: var(--panel); max-height: 260px; }
+  details.log { margin-top: 14px; }
+  details.log summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+  details.log pre { margin-top: 6px; max-height: 240px; font-size: 12px; }
+
+  .chat-log { display: flex; flex-direction: column; gap: 10px; min-height: 240px; max-height: 60vh; overflow-y: auto; padding: 4px 2px 12px; }
+  .msg { max-width: 85%; padding: 9px 12px; border-radius: 10px; white-space: pre-wrap; word-break: break-word; }
+  .msg.user { align-self: flex-end; background: var(--accent); color: var(--accent-text); }
+  .msg.assistant { align-self: flex-start; background: var(--chip); }
+  .msg .meta { margin-top: 6px; }
+  .chat-empty { color: var(--muted); text-align: center; margin: auto; }
+  .chat-form { display: flex; gap: 8px; align-items: flex-end; border-top: 1px solid var(--border); padding-top: 12px; }
+  .chat-form textarea { min-height: 44px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Model Eval Runner</h1>
+  <span class="sub" id="projectDir"></span>
+</header>
+
+<main class="layout">
+  <!-- Connection settings -->
+  <section class="panel">
+    <h2>Model under test</h2>
+
+    <label for="preset">Provider</label>
+    <select id="preset"></select>
+
+    <label for="format">API format</label>
+    <select id="format">
+      <option value="openai">OpenAI-compatible (chat/completions)</option>
+      <option value="anthropic">Anthropic Messages</option>
+    </select>
+
+    <label for="baseUrl">Base URL</label>
+    <input type="text" id="baseUrl" spellcheck="false" autocomplete="off">
+
+    <label for="apiKey">API key</label>
+    <input type="password" id="apiKey" autocomplete="off" spellcheck="false">
+    <div class="hint" id="keyHint">Held in memory by the local server only. Never written to the output file.</div>
+
+    <label for="model">Model name</label>
+    <input type="text" id="model" spellcheck="false" autocomplete="off" placeholder="Exact model ID from the provider">
+
+    <label for="systemPrompt">System prompt</label>
+    <textarea id="systemPrompt" placeholder="None"></textarea>
+    <div class="hint">Leave blank to test the model's default behavior. Anything here is recorded in the output file.</div>
+
+    <div class="row2">
+      <div>
+        <label for="temperature">Temperature</label>
+        <input type="number" id="temperature" step="0.1" min="0" max="2" placeholder="Default">
+      </div>
+      <div>
+        <label for="maxTokens">Max output tokens</label>
+        <input type="number" id="maxTokens" step="1" min="1" placeholder="Default">
+      </div>
+    </div>
+    <div class="hint">Blank uses the provider's default. Some newer models reject a temperature setting.</div>
+
+    <label for="extraParams">Extra request parameters (JSON)</label>
+    <textarea id="extraParams" spellcheck="false" placeholder='Optional, e.g. {"reasoning_effort": "high"}'></textarea>
+
+    <label for="parallel">Parallel requests</label>
+    <input type="number" id="parallel" min="1" max="8" step="1" value="3">
+    <div class="hint">How many prompts are in flight at once. Lower it if you hit rate limits.</div>
+
+    <div class="actions">
+      <button id="testBtn">Test connection</button>
+    </div>
+    <div class="notice" id="testMsg"></div>
+  </section>
+
+  <!-- Work area -->
+  <section class="panel">
+    <nav class="tabs">
+      <button class="active" data-tab="batch">Batch run</button>
+      <button data-tab="chat">Chat</button>
+    </nav>
+
+    <div id="tab-batch">
+      <div class="files">
+        <div>
+          <label for="inputFile">Prompts file</label>
+          <input type="text" id="inputFile" spellcheck="false">
+        </div>
+        <div>
+          <label for="outputFile">Output file</label>
+          <input type="text" id="outputFile" spellcheck="false">
+        </div>
+        <button id="loadBtn">Load</button>
+      </div>
+      <div class="hint">Both files live in the project folder. Each prompt is sent alone in a new conversation; only its prompt text is sent.</div>
+
+      <div class="summary" id="summary" hidden>
+        <span><b id="cTotal">0</b> prompts</span>
+        <span><b id="cDone">0</b> answered</span>
+        <span><b id="cPending">0</b> unanswered</span>
+        <span><b id="cErr">0</b> errors</span>
+        <span><b id="cFlag">0</b> flagged</span>
+      </div>
+      <div class="progress" id="progressWrap" hidden><div id="progress"></div></div>
+
+      <div class="actions">
+        <button class="primary" id="runBtn" disabled>Run unanswered prompts</button>
+        <button id="rerunAllBtn" disabled>Re-run all</button>
+        <button class="danger" id="stopBtn" disabled>Stop</button>
+      </div>
+      <div class="notice" id="runMsg"></div>
+
+      <div id="tableArea" hidden>
+        <div class="filters" id="filters">
+          <button data-filter="all" class="active">All</button>
+          <button data-filter="done">Answered</button>
+          <button data-filter="pending">Unanswered</button>
+          <button data-filter="error">Errors</button>
+          <button data-filter="flagged">Flagged</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Category</th><th>Prompt</th><th>Status</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <details class="log">
+        <summary>Run log</summary>
+        <pre id="log">Nothing yet.</pre>
+      </details>
+    </div>
+
+    <div id="tab-chat" hidden>
+      <div class="hint" style="margin-top:0">Talk to the model freely with the settings on the left. Chats are not saved to the output file.</div>
+      <div class="chat-log" id="chatLog"><div class="chat-empty">No messages yet.</div></div>
+      <div class="chat-form">
+        <textarea id="chatInput" placeholder="Message the model (Enter to send, Shift+Enter for a new line)"></textarea>
+        <button class="primary" id="sendBtn">Send</button>
+      </div>
+      <div class="actions">
+        <button id="newChatBtn">New conversation</button>
+      </div>
+      <div class="notice" id="chatMsg"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const PRESETS = [
+  { id: "tinker", label: "Thinking Machines (Tinker)", format: "openai",
+    url: "https://tinker.thinkingmachines.dev/services/tinker-prod/oai/api/v1",
+    model: "thinkingmachines/Inkling", maxTokens: "16000" },
+  { id: "openai", label: "OpenAI", format: "openai", url: "https://api.openai.com/v1" },
+  { id: "anthropic", label: "Anthropic", format: "anthropic", url: "https://api.anthropic.com/v1" },
+  { id: "gemini", label: "Google Gemini", format: "openai", url: "https://generativelanguage.googleapis.com/v1beta/openai" },
+  { id: "openrouter", label: "OpenRouter", format: "openai", url: "https://openrouter.ai/api/v1" },
+  { id: "xai", label: "xAI", format: "openai", url: "https://api.x.ai/v1" },
+  { id: "mistral", label: "Mistral", format: "openai", url: "https://api.mistral.ai/v1" },
+  { id: "deepseek", label: "DeepSeek", format: "openai", url: "https://api.deepseek.com/v1" },
+  { id: "together", label: "Together AI", format: "openai", url: "https://api.together.xyz/v1" },
+  { id: "custom", label: "Other (enter base URL)", format: "openai", url: "" },
+];
+const SAVED_FIELDS = ["preset", "format", "baseUrl", "model", "systemPrompt", "temperature",
+                      "maxTokens", "extraParams", "parallel", "inputFile", "outputFile"];
+const STATE_LABELS = { pending: "Not run", queued: "Queued", running: "Running", done: "Answered", error: "Error" };
+const FLAG_LABELS = { truncated: "Cut off", api_refusal: "API refusal", empty: "Empty", reasoning_split: "Reasoning split out" };
+
+const $ = (sel) => document.querySelector(sel);
+let catalog = [];          // [{id, category, primary_trait, prompt}]
+let states = {};           // id -> {state, flags}
+let openId = null;
+let filter = "all";
+let polling = false;
+let chatHistory = [];
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function notice(el, text, kind) { el.className = "notice " + (kind || "info"); el.textContent = text || ""; }
+
+async function api(path, body) {
+  const opts = body === undefined ? {} :
+    { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+  let res;
+  try { res = await fetch(path, opts); }
+  catch (e) { throw new Error("Can't reach the local server. Is run_eval.py still running?"); }
+  let data;
+  try { data = await res.json(); } catch (e) { data = { error: "Unexpected reply from the local server (HTTP " + res.status + ")." }; }
+  if (!res.ok || data.error) throw new Error(data.error || "HTTP " + res.status);
+  return data;
+}
+
+// ---------- settings ----------
+
+function saveSettings() {
+  try {
+    const values = {};
+    for (const f of SAVED_FIELDS) values[f] = $("#" + f).value;
+    localStorage.setItem("evalRunnerSettings", JSON.stringify(values));
+  } catch (e) { /* storage unavailable; settings just won't persist */ }
+}
+function restoreSettings() {
+  try {
+    const values = JSON.parse(localStorage.getItem("evalRunnerSettings") || "{}");
+    for (const f of SAVED_FIELDS) if (values[f] !== undefined) $("#" + f).value = values[f];
+  } catch (e) { /* ignore */ }
+}
+function applyPreset() {
+  const p = PRESETS.find((x) => x.id === $("#preset").value);
+  if (!p) return;
+  $("#format").value = p.format;
+  if (p.id !== "custom") $("#baseUrl").value = p.url;
+  if (p.model) $("#model").value = p.model;
+  if (p.maxTokens) $("#maxTokens").value = p.maxTokens;
+  updateMaxTokensHint();
+}
+function updateMaxTokensHint() {
+  $("#maxTokens").placeholder = $("#format").value === "anthropic" ? "16000" : "Default";
+}
+
+function getConfig() {
+  let extra = {};
+  const raw = $("#extraParams").value.trim();
+  if (raw) {
+    try { extra = JSON.parse(raw); } catch (e) { throw new Error("Extra request parameters must be valid JSON."); }
+    if (!extra || typeof extra !== "object" || Array.isArray(extra)) {
+      throw new Error('Extra request parameters must be a JSON object, like {"top_p": 1}.');
+    }
+  }
+  const t = $("#temperature").value.trim();
+  const m = $("#maxTokens").value.trim();
+  if (t && isNaN(Number(t))) throw new Error("Temperature must be a number.");
+  if (m && !/^\d+$/.test(m)) throw new Error("Max output tokens must be a whole number.");
+  return {
+    provider: $("#format").value,
+    base_url: $("#baseUrl").value.trim(),
+    api_key: $("#apiKey").value.trim(),
+    model: $("#model").value.trim(),
+    system_prompt: $("#systemPrompt").value,
+    temperature: t === "" ? null : Number(t),
+    max_tokens: m === "" ? null : parseInt(m, 10),
+    extra_params: extra,
+    parallel: parseInt($("#parallel").value, 10) || 1,
+  };
+}
+
+// ---------- batch: table ----------
+
+function matchesFilter(st) {
+  if (filter === "all") return true;
+  if (filter === "flagged") return st.flags.length > 0;
+  if (filter === "pending") return st.state === "pending" || st.state === "queued" || st.state === "running";
+  return st.state === filter;
+}
+function badgeHtml(st) {
+  let html = `<span class="badge ${st.state}">${STATE_LABELS[st.state] || st.state}</span>`;
+  for (const f of st.flags) html += `<span class="badge flag">${esc(FLAG_LABELS[f] || f)}</span>`;
+  return html;
+}
+function reasoningHtml(text) {
+  return `<details class="reasoning"><summary>Model reasoning (returned separately, not part of the answer)</summary><pre>${esc(text)}</pre></details>`;
+}
+function prettyCategory(c) { return String(c || "").replace(/_/g, " "); }
+
+function buildTable() {
+  const tbody = $("#rows");
+  tbody.innerHTML = "";
+  for (const it of catalog) {
+    const tr = document.createElement("tr");
+    tr.className = "item";
+    tr.dataset.id = it.id;
+    tr.innerHTML = `<td class="id">${esc(it.id)}</td><td class="cat">${esc(prettyCategory(it.category))}</td>` +
+      `<td class="prompt" title="${esc(it.prompt)}">${esc(it.prompt)}</td><td class="status"></td>`;
+    tr.addEventListener("click", () => toggleDetail(it.id));
+    tbody.appendChild(tr);
+  }
+  $("#tableArea").hidden = false;
+  refreshRows();
+}
+
+function refreshRows() {
+  for (const tr of document.querySelectorAll("#rows tr.item")) {
+    const st = states[tr.dataset.id] || { state: "pending", flags: [] };
+    tr.querySelector("td.status").innerHTML = badgeHtml(st);
+    tr.hidden = !matchesFilter(st);
+    tr.classList.toggle("open", tr.dataset.id === openId);
+  }
+  const detail = document.querySelector("#rows tr.detail");
+  if (detail) {
+    const owner = document.querySelector(`#rows tr.item[data-id="${CSS.escape(openId)}"]`);
+    detail.hidden = !owner || owner.hidden;
+  }
+}
+
+function toggleDetail(id) {
+  const old = document.querySelector("#rows tr.detail");
+  if (old) old.remove();
+  if (openId === id) { openId = null; refreshRows(); return; }
+  openId = id;
+  const owner = document.querySelector(`#rows tr.item[data-id="${CSS.escape(id)}"]`);
+  const tr = document.createElement("tr");
+  tr.className = "detail";
+  tr.innerHTML = `<td colspan="4"><div class="detail" id="detailBody">Loading…</div></td>`;
+  owner.after(tr);
+  refreshRows();
+  loadDetail(id);
+}
+
+async function loadDetail(id) {
+  let item;
+  try { item = await api("/api/item?id=" + encodeURIComponent(id)); }
+  catch (e) { const b = $("#detailBody"); if (b) b.textContent = e.message; return; }
+  const body = $("#detailBody");
+  if (!body || openId !== id) return;
+  const meta = item.response_meta || {};
+  let responseHtml;
+  if (item.model_response) {
+    responseHtml = `<pre>${esc(item.model_response)}</pre>`;
+    const bits = [];
+    if (meta.model) bits.push("Model: " + meta.model);
+    if (meta.finish_reason) bits.push("Finish: " + meta.finish_reason);
+    if (meta.input_tokens != null || meta.output_tokens != null) bits.push(`Tokens: ${meta.input_tokens ?? "?"} in / ${meta.output_tokens ?? "?"} out`);
+    if (meta.elapsed_seconds != null) bits.push(meta.elapsed_seconds + " s");
+    if (meta.attempts > 1) bits.push(meta.attempts + " attempts");
+    if (meta.stop_details) bits.push("Stop details: " + JSON.stringify(meta.stop_details));
+    if (meta.timestamp) bits.push(meta.timestamp);
+    responseHtml += `<div class="meta">${esc(bits.join(" · "))}</div>`;
+    if (meta.reasoning) responseHtml += reasoningHtml(meta.reasoning);
+  } else if (meta.error) {
+    responseHtml = `<div class="notice err">${esc(meta.error)}</div>`;
+  } else {
+    responseHtml = `<div class="meta">No response yet.</div>`;
+  }
+  const running = item.state.state === "queued" || item.state.state === "running";
+  body.innerHTML =
+    `<h4>Prompt sent to the model</h4><pre>${esc(item.prompt)}</pre>` +
+    `<h4>Model response ${item.state.flags.map((f) => `<span class="badge flag">${esc(FLAG_LABELS[f] || f)}</span>`).join("")}</h4>${responseHtml}` +
+    (item.probe ? `<h4>What a good answer looks like (not sent)</h4><div>${esc(item.probe)}</div>` : "") +
+    `<div class="meta">${esc([item.primary_trait && "Trait: " + item.primary_trait, item.category && "Category: " + prettyCategory(item.category)].filter(Boolean).join(" · "))}</div>` +
+    `<div class="actions"><button id="rerunOneBtn" ${running || isRunning() ? "disabled" : ""}>${item.model_response ? "Re-run this prompt" : "Run this prompt"}</button></div>`;
+  $("#rerunOneBtn").addEventListener("click", (ev) => { ev.stopPropagation(); startRun("ids", [id]); });
+}
+
+// ---------- batch: status ----------
+
+let lastRun = null;
+function isRunning() { return !!lastRun && (lastRun.state === "running" || lastRun.state === "stopping"); }
+
+function applyStatus(s) {
+  if (!s.loaded) return;
+  const prevOpen = openId ? JSON.stringify(states[openId]) : null;
+  states = {};
+  for (const st of s.states) states[st.id] = st;
+  lastRun = s.run;
+
+  const all = s.states;
+  const count = (fn) => all.filter(fn).length;
+  $("#cTotal").textContent = all.length;
+  $("#cDone").textContent = count((x) => x.state === "done");
+  $("#cPending").textContent = count((x) => x.state !== "done");
+  $("#cErr").textContent = count((x) => x.state === "error");
+  $("#cFlag").textContent = count((x) => x.flags.length > 0);
+  $("#summary").hidden = false;
+
+  const running = isRunning();
+  $("#progressWrap").hidden = !s.run;
+  if (s.run) $("#progress").style.width = (s.run.total ? 100 * s.run.finished / s.run.total : 0) + "%";
+
+  $("#runBtn").disabled = running;
+  $("#rerunAllBtn").disabled = running;
+  $("#stopBtn").disabled = !running || s.run.state === "stopping";
+  $("#loadBtn").disabled = running;
+
+  const runMsg = $("#runMsg");
+  if (s.run) {
+    const r = s.run;
+    const head = `${r.finished} of ${r.total} finished (${r.succeeded} answered, ${r.failed} failed).`;
+    if (r.state === "running") notice(runMsg, "Running. " + head + " Saving to " + s.output + " after each response.", "info");
+    else if (r.state === "stopping") notice(runMsg, r.message + " " + head, "info");
+    else if (r.state === "done") notice(runMsg, "Done. " + head + "\nSaved to " + s.output_path, r.failed ? "info" : "ok");
+    else if (r.state === "stopped") notice(runMsg, r.message + "\n" + head, "info");
+    else notice(runMsg, r.message + "\n" + head, "err");
+  }
+
+  $("#log").textContent = s.log.length ? s.log.join("\n") : "Nothing yet.";
+  refreshRows();
+  if (openId && JSON.stringify(states[openId]) !== prevOpen) loadDetail(openId);
+}
+
+async function poll() {
+  if (polling) return;
+  polling = true;
+  try {
+    while (true) {
+      const s = await api("/api/status");
+      applyStatus(s);
+      if (!isRunning()) break;
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+  } catch (e) {
+    notice($("#runMsg"), e.message, "err");
+  } finally {
+    polling = false;
+  }
+}
+
+async function loadFiles() {
+  saveSettings();
+  notice($("#runMsg"), "");
+  try {
+    const s = await api("/api/load", { input: $("#inputFile").value.trim(), output: $("#outputFile").value.trim() });
+    catalog = s.catalog;
+    openId = null;
+    buildTable();
+    applyStatus(s);
+    const done = s.states.filter((x) => x.state === "done").length;
+    let msg = `Loaded ${catalog.length} prompts from ${s.input}.`;
+    if (done) {
+      msg += ` ${s.output} already has ${done} responses`;
+      if (s.settings) msg += ` from ${s.settings.model_requested}`;
+      msg += ". Run unanswered prompts continues where it left off.";
+    } else {
+      msg += ` Responses will be saved to ${s.output}.`;
+    }
+    notice($("#runMsg"), msg, "info");
+    $("#runBtn").disabled = false;
+    $("#rerunAllBtn").disabled = false;
+  } catch (e) {
+    notice($("#runMsg"), e.message, "err");
+  }
+}
+
+async function startRun(mode, ids) {
+  saveSettings();
+  let config;
+  try { config = getConfig(); } catch (e) { notice($("#runMsg"), e.message, "err"); return; }
+  if (mode === "all") {
+    const n = catalog.length;
+    if (!confirm(`Send all ${n} prompts again? This replaces every response in ${$("#outputFile").value.trim()}.`)) return;
+  }
+  try {
+    const s = await api("/api/run", { config, mode, ids });
+    applyStatus(s);
+    poll();
+  } catch (e) {
+    notice($("#runMsg"), e.message, "err");
+  }
+}
+
+// ---------- chat ----------
+
+function renderChat() {
+  const log = $("#chatLog");
+  if (!chatHistory.length) { log.innerHTML = `<div class="chat-empty">No messages yet.</div>`; return; }
+  log.innerHTML = chatHistory.map((m) => {
+    let meta = "";
+    if (m.meta) {
+      const bits = [m.meta.model, m.meta.finish_reason && "finish: " + m.meta.finish_reason,
+        m.meta.output_tokens != null && m.meta.output_tokens + " tokens", m.meta.elapsed_seconds + " s"].filter(Boolean);
+      meta = `<div class="meta">${esc(bits.join(" · "))}</div>`;
+    }
+    const reasoning = m.meta && m.meta.reasoning ? reasoningHtml(m.meta.reasoning) : "";
+    return `<div class="msg ${m.role}">${esc(m.content)}${meta}${reasoning}</div>`;
+  }).join("") + (chatBusy ? `<div class="msg assistant"><span class="meta">Waiting for the model…</span></div>` : "");
+  log.scrollTop = log.scrollHeight;
+}
+
+let chatBusy = false;
+async function sendChat() {
+  const text = $("#chatInput").value.trim();
+  if (!text || chatBusy) return;
+  let config;
+  try { config = getConfig(); } catch (e) { notice($("#chatMsg"), e.message, "err"); return; }
+  saveSettings();
+  notice($("#chatMsg"), "");
+  chatHistory.push({ role: "user", content: text });
+  $("#chatInput").value = "";
+  chatBusy = true;
+  $("#sendBtn").disabled = true;
+  renderChat();
+  try {
+    const r = await api("/api/chat", { config, messages: chatHistory.map((m) => ({ role: m.role, content: m.content })) });
+    chatHistory.push({ role: "assistant", content: r.text || "[No text returned]", meta: r });
+  } catch (e) {
+    chatHistory.pop();                // drop the unanswered message so the conversation stays valid
+    $("#chatInput").value = text;     // and give it back for another try
+    notice($("#chatMsg"), e.message, "err");
+  } finally {
+    chatBusy = false;
+    $("#sendBtn").disabled = false;
+    renderChat();
+  }
+}
+
+async function testConnection() {
+  saveSettings();
+  let config;
+  try { config = getConfig(); } catch (e) { notice($("#testMsg"), e.message, "err"); return; }
+  notice($("#testMsg"), "Sending a short test message…", "info");
+  $("#testBtn").disabled = true;
+  try {
+    const r = await api("/api/chat", { config, messages: [{ role: "user", content: "Reply with a one-sentence greeting." }] });
+    const reasoning = r.reasoning ? `yes (${r.reasoning.length} characters, kept out of the answer)` :
+      (r.reasoning_in_content ? "it was inline and has been split out" : "none returned");
+    notice($("#testMsg"), `Connected. Model reported: ${r.model || "(not given)"}\nReasoning: ${reasoning}\nReply: ${(r.text || "[no text]").slice(0, 200)}`, "ok");
+  } catch (e) {
+    notice($("#testMsg"), e.message, "err");
+  } finally {
+    $("#testBtn").disabled = false;
+  }
+}
+
+// ---------- wiring ----------
+
+async function init() {
+  $("#preset").innerHTML = PRESETS.map((p) => `<option value="${p.id}">${esc(p.label)}</option>`).join("");
+  $("#preset").value = "tinker";
+  applyPreset();
+
+  let info = null;
+  try { info = await api("/api/info"); } catch (e) { notice($("#runMsg"), e.message, "err"); }
+  if (info) {
+    $("#projectDir").textContent = info.project_dir;
+    $("#inputFile").value = info.default_input;
+    $("#outputFile").value = info.default_output;
+    if (info.env_key) {
+      $("#apiKey").placeholder = "Using EVAL_API_KEY from the terminal";
+      $("#keyHint").textContent = "Leave blank to use EVAL_API_KEY. Held in memory only; never written to the output file.";
+    } else if (info.tinker_env_key) {
+      $("#apiKey").placeholder = "Using TINKER_API_KEY for Tinker URLs";
+      $("#keyHint").textContent = "Leave blank to use TINKER_API_KEY (sent only to Tinker). Held in memory only; never written to the output file.";
+    }
+  }
+  restoreSettings();
+  updateMaxTokensHint();
+
+  $("#preset").addEventListener("change", () => { applyPreset(); saveSettings(); });
+  $("#format").addEventListener("change", () => { updateMaxTokensHint(); saveSettings(); });
+  for (const f of SAVED_FIELDS) $("#" + f).addEventListener("change", saveSettings);
+  $("#testBtn").addEventListener("click", testConnection);
+  $("#loadBtn").addEventListener("click", loadFiles);
+  $("#runBtn").addEventListener("click", () => startRun("missing"));
+  $("#rerunAllBtn").addEventListener("click", () => startRun("all"));
+  $("#stopBtn").addEventListener("click", async () => {
+    try { applyStatus(await api("/api/stop", {})); } catch (e) { notice($("#runMsg"), e.message, "err"); }
+  });
+  for (const b of document.querySelectorAll("#filters button")) {
+    b.addEventListener("click", () => {
+      filter = b.dataset.filter;
+      for (const x of document.querySelectorAll("#filters button")) x.classList.toggle("active", x === b);
+      refreshRows();
+    });
+  }
+  for (const b of document.querySelectorAll(".tabs button")) {
+    b.addEventListener("click", () => {
+      for (const x of document.querySelectorAll(".tabs button")) x.classList.toggle("active", x === b);
+      $("#tab-batch").hidden = b.dataset.tab !== "batch";
+      $("#tab-chat").hidden = b.dataset.tab !== "chat";
+    });
+  }
+  $("#sendBtn").addEventListener("click", sendChat);
+  $("#chatInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); sendChat(); }
+  });
+  $("#newChatBtn").addEventListener("click", () => { chatHistory = []; notice($("#chatMsg"), ""); renderChat(); });
+
+  // If the page was reloaded during a run, pick the session back up.
+  try {
+    const s = await api("/api/status?full=1");
+    if (s.loaded) {
+      catalog = s.catalog;
+      $("#inputFile").value = s.input;
+      $("#outputFile").value = s.output;
+      buildTable();
+      applyStatus(s);
+      if (isRunning()) poll();
+    }
+  } catch (e) { /* server message already shown */ }
+}
+init();
+</script>
+</body>
+</html>
