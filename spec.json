@@ -236,6 +236,7 @@
               "label": "Inkling as Collaborator",
               "content": {
                 "title": "Inkling as Collaborator",
+                "toc_depth": 2,
                 "subtitle": "Measuring a model's collaborative character with 500 synthetic prompts, a rubric and pairwise preference",
                 "tags": [
                   "Model Evaluation",

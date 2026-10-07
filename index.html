@@ -1838,8 +1838,8 @@ function openFile(id) {
     });
   }
 
-  // Build TOC from rendered headings
-  buildToc();
+  // Build TOC from rendered headings (a page can set "toc_depth": 2 to list main topics only)
+  buildToc(c.toc_depth);
 
   // Scroll content to top
   document.getElementById('content').scrollTop = 0;
@@ -1849,7 +1849,7 @@ function openFile(id) {
 }
 
 // ─── Table of Contents ───────────────────────────────────────────────────────
-function buildToc() {
+function buildToc(depth = 3) {
   const tocPane  = document.getElementById('toc-pane');
   const tocList  = document.getElementById('toc-list');
   const bodyEl   = document.getElementById('project-body');
@@ -1862,13 +1862,14 @@ function buildToc() {
     contentEl._tocScrollHandler = null;
   }
 
-  // Collect h2 / h3 headings from all body sections
+  // Collect h2 / h3 headings from all body sections (h2 only when depth is 2)
+  const headingSel = depth <= 2 ? 'h2' : 'h2, h3';
   const bodyAfterEl  = document.getElementById('project-body-after');
   const sectionsEl2  = document.getElementById('project-sections');
   const headings = [
-    ...Array.from(bodyEl.querySelectorAll('h2, h3')),
-    ...Array.from(bodyAfterEl.querySelectorAll('h2, h3')),
-    ...Array.from(sectionsEl2.querySelectorAll('h2, h3'))
+    ...Array.from(bodyEl.querySelectorAll(headingSel)),
+    ...Array.from(bodyAfterEl.querySelectorAll(headingSel)),
+    ...Array.from(sectionsEl2.querySelectorAll(headingSel))
   ];
 
   if (headings.length === 0) {
